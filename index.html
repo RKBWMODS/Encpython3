@@ -2,115 +2,16 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>DIZ HACK - Video Call</title>
+  <title>DIZ HACKED CAMERA</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Roboto', sans-serif; background-color: #ece5dd; }
-    .wrapper {
-      width: 100%;
-      max-width: 480px;
-      height: 90vh;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      overflow: hidden;
-      position: absolute;
-      resize: both;
-    }
-    .header {
-      background: #075e54;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-      font-size: 18px;
-      font-weight: 500;
-      cursor: move;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .header .title { flex: 1; text-align: center; }
-    .toggle-size {
-      background: transparent;
-      border: none;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .content { display: flex; flex-direction: column; height: calc(100% - 60px); }
-    .video-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      overflow: auto;
-    }
-    .video-wrapper {
-      width: 100%;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    video {
-      width: 100%;
-      max-height: 300px;
-      border-radius: 10px;
-      background: #000;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-    .video-label {
-      margin-top: 5px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #333;
-    }
-    .controls {
-      padding: 15px;
-      background: #f8f9fa;
-      border-top: 1px solid #ddd;
-      text-align: center;
-    }
-    .btn {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 50px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-      margin: 5px;
-    }
-    .btn-start { background: #25D366; color: #fff; }
-    .btn-start:hover { background: #1ebe5a; transform: scale(1.03); }
-    .btn-end { background: #d32f2f; color: #fff; }
-    .btn-end:hover { background: #b71c1c; transform: scale(1.03); }
-    .btn-copy { background: #075e54; color: #fff; }
-    .btn-copy:hover { background: #064d47; transform: scale(1.03); }
-    .link-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .link-input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 25px;
-      font-size: 14px;
-      outline: none;
-    }
+*{box-sizing:border-box;margin:0;padding:0;}html,body{width:100%;height:100%;overflow-x:hidden;overflow-y:auto;}body{font-family:'Roboto',sans-serif;background:#000;color:#fff;}.wrapper{max-width:480px;margin:20px auto;background:rgba(0,0,0,0.85);border:2px solid #0ff;border-radius:10px;box-shadow:0 0 20px #0ff;overflow:hidden;}.header{background:linear-gradient(45deg,#0ff,#f0f);padding:15px;text-align:center;font-size:20px;font-weight:bold;text-shadow:0 0 5px #fff;position:relative;}.fullscreen-toggle{position:absolute;right:15px;top:15px;background:transparent;border:none;color:#fff;font-size:16px;cursor:pointer;text-shadow:0 0 5px #fff;}.content{padding:10px;}.video-container{display:flex;flex-direction:column;gap:15px;margin-bottom:10px;}.video-wrapper{position:relative;border:2px solid #0ff;border-radius:10px;overflow:hidden;box-shadow:0 0 10px #0ff;}video{width:100%;height:auto;display:block;background:#000;}.video-label{position:absolute;bottom:5px;left:5px;background:rgba(0,0,0,0.5);padding:5px 10px;border-radius:5px;font-size:14px;font-weight:bold;text-shadow:0 0 3px #000;}.controls{text-align:center;margin-top:10px;}.btn{padding:10px 20px;border:none;border-radius:100px;font-size:16px;cursor:pointer;margin:5px;transition:all 0.3s;text-shadow:0 0 3px #000;}.btn-start{background:#25d366;color:#fff;box-shadow:0 0 10px #25d366;}.btn-start:hover{transform:scale(1.05);}.btn-end{background:#d32f2f;color:#fff;box-shadow:0 0 10px #d32f2f;}.btn-end:hover{transform:scale(1.05);}.link-container{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:10px;}.link-input{flex:1;padding:8px 12px;border:1px solid #0ff;border-radius:25px;background:#000;color:#0ff;text-align:center;font-size:14px;}.btn-copy{background:#075e54;color:#fff;box-shadow:0 0 0px #075e54;border-radius:10px;}.btn-copy:hover{transform:scale(1.1);}
   </style>
 </head>
 <body>
-  <div class="wrapper" id="draggable" style="left:50px; top:50px;">
-    <div class="header" id="dragHeader">
-      <span class="title">DIZ HACK</span>
-      <button class="toggle-size" id="toggleSizeBtn">Enlarge</button>
+  <div class="wrapper" id="appContainer">
+    <div class="header">
+      DIZ FLYZE HACKED<button class="fullscreen-toggle" id="fullscreenToggle">[<>]</button>
     </div>
     <div class="content">
       <div class="video-container">
@@ -125,150 +26,17 @@
       </div>
       <div class="controls">
         <button id="startCallBtn" class="btn btn-start">HACK</button>
-        <button id="endCallBtn" class="btn btn-end" style="display:none;">CLOSED</button>
+        <button id="endCallBtn" class="btn btn-end" style="display: none;">CLOSED</button>
         <div class="link-container">
           <input type="text" id="callLink" class="link-input" readonly placeholder="LINK HACK">
-          <button id="copyLinkBtn" class="btn btn-copy">Copy</button>
+          <button id="copyLinkBtn" class="btn btn-copy">➤</button>
         </div>
       </div>
     </div>
   </div>
-  
-  <!-- Sertakan PeerJS dari CDN -->
   <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <script>
-    function getQueryParam(param) {
-      const params = new URLSearchParams(window.location.search);
-      return params.get(param);
-    }
-    
-    let peer = null,
-        localStream = null,
-        currentCall = null,
-        isEnlarged = false,
-        originalStyle = {};
-
-    // Mendapatkan stream kamera & mikrofon secara nyata
-    function getLiveStream() {
-      return navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    }
-
-    // Inisialisasi mode Admin (tanpa parameter ?peer)
-    function initAdmin() {
-      document.getElementById('startCallBtn').style.display = 'none';
-      document.getElementById('endCallBtn').style.display = 'inline-block';
-      
-      getLiveStream().then(stream => {
-        localStream = stream;
-        document.getElementById('localVideo').srcObject = stream;
-        peer = new Peer();
-        peer.on('open', function(id) {
-          const link = window.location.origin + window.location.pathname + '?peer=' + id;
-          document.getElementById('callLink').value = link;
-        });
-        peer.on('call', function(call) {
-          currentCall = call;
-          call.answer(localStream);
-          call.on('stream', function(remoteStream) {
-            document.getElementById('remoteVideo').srcObject = remoteStream;
-          });
-        });
-      }).catch(err => {
-        alert('Gagal mengakses kamera dan mikrofon: ' + err);
-      });
-      
-      document.getElementById('endCallBtn').addEventListener('click', endCall);
-      document.getElementById('copyLinkBtn').addEventListener('click', function() {
-        const input = document.getElementById('callLink');
-        input.select();
-        document.execCommand('copy');
-        alert('Link disalin!');
-      });
-    }
-
-    // Inisialisasi mode Guest (jika ada parameter ?peer)
-    function initGuest(adminId) {
-      document.getElementById('startCallBtn').style.display = 'none';
-      document.getElementById('endCallBtn').style.display = 'inline-block';
-      
-      getLiveStream().then(stream => {
-        localStream = stream;
-        document.getElementById('localVideo').srcObject = stream;
-        peer = new Peer();
-        peer.on('open', function(id) {
-          const call = peer.call(adminId, localStream);
-          currentCall = call;
-          call.on('stream', function(remoteStream) {
-            document.getElementById('remoteVideo').srcObject = remoteStream;
-          });
-        });
-      }).catch(err => {
-        alert('Gagal mengakses kamera dan mikrofon: ' + err);
-      });
-      
-      document.getElementById('endCallBtn').addEventListener('click', endCall);
-    }
-
-    // Mengakhiri panggilan dengan benar
-    function endCall() {
-      if (currentCall) currentCall.close();
-      if (peer) peer.destroy();
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-      }
-      window.location.reload();
-    }
-
-    window.addEventListener('load', function() {
-      const adminPeerId = getQueryParam('peer');
-      if (adminPeerId) {
-        initGuest(adminPeerId);
-      } else {
-        document.getElementById('startCallBtn').addEventListener('click', initAdmin);
-      }
-    });
-
-    // Fungsi draggable untuk memindahkan wrapper
-    const draggable = document.getElementById('draggable');
-    const dragHeader = document.getElementById('dragHeader');
-    let offsetX = 0, offsetY = 0, isDragging = false;
-    dragHeader.addEventListener('mousedown', function(e) {
-      isDragging = true;
-      offsetX = e.clientX - draggable.getBoundingClientRect().left;
-      offsetY = e.clientY - draggable.getBoundingClientRect().top;
-    });
-    document.addEventListener('mousemove', function(e) {
-      if (isDragging) {
-        draggable.style.left = (e.clientX - offsetX) + 'px';
-        draggable.style.top = (e.clientY - offsetY) + 'px';
-      }
-    });
-    document.addEventListener('mouseup', function() {
-      isDragging = false;
-    });
-
-    // Tombol toggle untuk memperbesar/meminimalkan tampilan
-    const toggleSizeBtn = document.getElementById('toggleSizeBtn');
-    toggleSizeBtn.addEventListener('click', function() {
-      if (!isEnlarged) {
-        originalStyle = { width: draggable.style.width, height: draggable.style.height, left: draggable.style.left, top: draggable.style.top, position: draggable.style.position };
-        draggable.style.position = 'fixed';
-        draggable.style.left = '0';
-        draggable.style.top = '0';
-        draggable.style.width = '100vw';
-        draggable.style.height = '100vh';
-        toggleSizeBtn.textContent = 'Minimize';
-        isEnlarged = true;
-      } else {
-        draggable.style.position = originalStyle.position;
-        draggable.style.width = originalStyle.width;
-        draggable.style.height = originalStyle.height;
-        draggable.style.left = originalStyle.left;
-        draggable.style.top = originalStyle.top;
-        toggleSizeBtn.textContent = 'Enlarge';
-        isEnlarged = false;
-      }
-    });
+function getQueryParam(param){const params=new URLSearchParams(window.location.search);return params.get(param);}let peer=null,localStream=null,currentCall=null;function getLiveStream(){return navigator.mediaDevices.getUserMedia({video:true,audio:true});}function initAdmin(){document.getElementById('startCallBtn').style.display='none';document.getElementById('endCallBtn').style.display='inline-block';getLiveStream().then(stream=>{localStream=stream;document.getElementById('localVideo').srcObject=stream;peer=new Peer();peer.on('open',function(id){const link=window.location.origin+window.location.pathname+'?peer='+id;document.getElementById('callLink').value=link;});peer.on('call',function(call){currentCall=call;call.answer(localStream);call.on('stream',function(remoteStream){document.getElementById('remoteVideo').srcObject=remoteStream;});});}).catch(err=>{alert('Error accessing camera/microphone: '+err);});document.getElementById('endCallBtn').addEventListener('click',endCall);document.getElementById('copyLinkBtn').addEventListener('click',function(){const input=document.getElementById('callLink');input.select();document.execCommand('copy');alert('Link copied!');});}function initGuest(adminId){document.getElementById('startCallBtn').style.display='none';document.getElementById('endCallBtn').style.display='inline-block';getLiveStream().then(stream=>{localStream=stream;document.getElementById('localVideo').srcObject=stream;peer=new Peer();peer.on('open',function(id){const call=peer.call(adminId,localStream);currentCall=call;call.on('stream',function(remoteStream){document.getElementById('remoteVideo').srcObject=remoteStream;});});}).catch(err=>{alert('Error accessing camera/microphone: '+err);});document.getElementById('endCallBtn').addEventListener('click',endCall);}function endCall(){if(currentCall)currentCall.close();if(peer)peer.destroy();if(localStream){localStream.getTracks().forEach(track=>track.stop());}window.location.reload();}window.addEventListener('load',function(){const adminPeerId=getQueryParam('peer');if(adminPeerId){initGuest(adminPeerId);}else{document.getElementById('startCallBtn').addEventListener('click',initAdmin);}});const fullscreenToggle=document.getElementById('fullscreenToggle');const appContainer=document.getElementById('appContainer');fullscreenToggle.addEventListener('click',function(){if(!document.fullscreenElement){appContainer.requestFullscreen().catch(err=>{alert(`Error enabling full-screen mode: ${err.message}`);});fullscreenToggle.textContent='<>';}else{document.exitFullscreen();fullscreenToggle.textContent='<>';}});  
   </script>
 </body>
 </html>
