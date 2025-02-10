@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
     <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
     <style>
-      /* Animasi latar belakang gradient */
+      /* Latar belakang gradient animasi */
       body {
         margin: 0;
         padding: 0;
@@ -140,7 +140,7 @@
   <body>
     <div class="container">
       <div class="spinner" id="spinner"></div>
-      <h2>PYTHON <=</h2>
+      <h2>CTHON <=</h2>
       <textarea id="codeInput" placeholder="Tempel script Python di sini..."></textarea>
       <button id="encryptButton" disabled>ENC GAS</button>
       <div class="result-section">
@@ -150,7 +150,7 @@
       </div>
     </div>
 
-    <!-- PyScript: Kode Python untuk enkripsi dan obfuscation -->
+    <!-- PyScript: Kode Python untuk enkripsi dan obfuscation dengan pesan debug -->
     <py-script>
 import asyncio
 import uuid
@@ -159,9 +159,11 @@ import js
 async def main():
     # Nonaktifkan tombol ENC GAS sampai pustaka siap
     js.document.getElementById("encryptButton").disabled = True
-
-    import micropip
-    await micropip.install("pyaes")
+    try:
+        import micropip
+        await micropip.install("pyaes")
+    except Exception as e:
+        print("Error installing pyaes:", e)
     import pyaes
 
     def pad(data: bytes) -> bytes:
@@ -189,19 +191,24 @@ async def main():
         return header + encrypted_hex
 
     def on_encrypt(event):
-        js.document.getElementById("spinner").style.display = "block"
-        # Tampilkan pesan "Processing..." di output untuk debug
-        js.document.getElementById("output").innerText = "Processing..."
-        code = js.document.getElementById("codeInput").value
-        if not code.strip():
-            js.document.getElementById("output").innerText = "Input kosong!"
-            js.document.getElementById("spinner").style.display = "none"
-            return
-        # Debug: Cetak ke konsol PyScript (lihat di Developer Console)
-        print("Button ENC GAS diklik. Input:", code)
-        obfuscated = obfuscate_code(code)
-        js.document.getElementById("output").innerText = obfuscated
-        js.document.getElementById("spinner").style.display = "none"
+        try:
+            spinner = js.document.getElementById("spinner")
+            spinner.style.display = "block"
+            # Tampilkan pesan debug di output
+            js.document.getElementById("output").innerText = "DEBUG: Processing input..."
+            code = js.document.getElementById("codeInput").value
+            if not code.strip():
+                js.document.getElementById("output").innerText = "Input kosong!"
+                spinner.style.display = "none"
+                return
+            print("DEBUG: Button ENC GAS diklik. Input:", code)
+            obfuscated = obfuscate_code(code)
+            js.document.getElementById("output").innerText = obfuscated
+            spinner.style.display = "none"
+        except Exception as e:
+            js.document.getElementById("output").innerText = "Error: " + str(e)
+            spinner.style.display = "none"
+            print("Error in on_encrypt:", e)
 
     js.document.getElementById("encryptButton").addEventListener("click", on_encrypt)
     js.document.getElementById("encryptButton").disabled = False
