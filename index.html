@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>DIZ HACK</title>
+  <title>DIZ HACK - Video Call</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,6 +47,7 @@
       align-items: center;
       gap: 10px;
       padding: 10px;
+      overflow: auto;
     }
     .video-wrapper {
       width: 100%;
@@ -106,88 +107,94 @@
   </style>
 </head>
 <body>
-<div class="wrapper" id="draggable" style="left:50px; top:50px;">
-  <div class="header" id="dragHeader">
-    <span class="title">DIZ HACK</span>
-    <button class="toggle-size" id="toggleSizeBtn">Enlarge</button>
-  </div>
-  <div class="content">
-    <div class="video-container">
-      <div class="video-wrapper">
-        <video id="localVideo" autoplay muted playsinline></video>
-        <div class="video-label">DIZ FLYZE</div>
+  <div class="wrapper" id="draggable" style="left:50px; top:50px;">
+    <div class="header" id="dragHeader">
+      <span class="title">DIZ HACK</span>
+      <button class="toggle-size" id="toggleSizeBtn">Enlarge</button>
+    </div>
+    <div class="content">
+      <div class="video-container">
+        <div class="video-wrapper">
+          <video id="localVideo" autoplay muted playsinline></video>
+          <div class="video-label">DIZ FLYZE</div>
+        </div>
+        <div class="video-wrapper">
+          <video id="remoteVideo" autoplay playsinline></video>
+          <div class="video-label">TARGET HACK</div>
+        </div>
       </div>
-      <div class="video-wrapper">
-        <video id="remoteVideo" autoplay playsinline></video>
-        <div class="video-label">TARGET HACK</div>
+      <div class="controls">
+        <button id="startCallBtn" class="btn btn-start">HACK</button>
+        <button id="endCallBtn" class="btn btn-end" style="display:none;">CLOSED</button>
+        <div class="link-container">
+          <input type="text" id="callLink" class="link-input" readonly placeholder="LINK HACK">
+          <button id="copyLinkBtn" class="btn btn-copy">Copy</button>
+        </div>
       </div>
     </div>
-    <div class="controls">
-      <button id="startCallBtn" class="btn btn-start">HACK</button>
-      <button id="endCallBtn" class="btn btn-end" style="display:none;">CLOSED</button>
-      <div class="link-container">
-        <input type="text" id="callLink" class="link-input" readonly placeholder="LINK HACK">
-        <button id="copyLinkBtn" class="btn btn-copy">Copy</button>
-      </div>
-    </div>
   </div>
-</div>
-<!-- Sertakan PeerJS dari CDN -->
-<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-<script>
-  function getQueryParam(param) {
-    const params = new URLSearchParams(window.location.search);
-    return params.get(param);
-  }
-  let peer = null, localStream = null, currentCall = null, isEnlarged = false, originalStyle = {};
-  // Untuk Admin: stream hitam (sesuai konsep awal)
-  function createBlackStream(width = 640, height = 480, fps = 30) {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, width, height);
-    return canvas.captureStream(fps);
-  }
-  function initAdmin() {
-    document.getElementById('startCallBtn').style.display = 'none';
-    document.getElementById('endCallBtn').style.display = 'inline-block';
-    peer = new Peer();
-    peer.on('open', function(id) {
-      const link = window.location.origin + window.location.pathname + '?peer=' + id;
-      document.getElementById('callLink').value = link;
-    });
-    localStream = createBlackStream();
-    document.getElementById('localVideo').srcObject = localStream;
-    peer.on('call', function(call) {
-      currentCall = call;
-      call.answer(localStream);
-      call.on('stream', function(remoteStream) {
-        document.getElementById('remoteVideo').srcObject = remoteStream;
-      });
-    });
-    document.getElementById('endCallBtn').addEventListener('click', function() {
-      if (currentCall) currentCall.close();
-      if (peer) peer.destroy();
-      if (localStream) localStream.getTracks().forEach(track => track.stop());
-      window.location.reload();
-    });
-    document.getElementById('copyLinkBtn').addEventListener('click', function() {
-      const input = document.getElementById('callLink');
-      input.select();
-      document.execCommand('copy');
-      alert('Link disalin!');
-    });
-  }
-  function initGuest(adminId) {
-    document.getElementById('startCallBtn').style.display = 'none';
-    document.getElementById('endCallBtn').style.display = 'inline-block';
-    peer = new Peer();
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then(function(stream) {
+  
+  <!-- Sertakan PeerJS dari CDN -->
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <script>
+    function getQueryParam(param) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(param);
+    }
+    
+    let peer = null,
+        localStream = null,
+        currentCall = null,
+        isEnlarged = false,
+        originalStyle = {};
+
+    // Mendapatkan stream kamera & mikrofon secara nyata
+    function getLiveStream() {
+      return navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    }
+
+    // Inisialisasi mode Admin (tanpa parameter ?peer)
+    function initAdmin() {
+      document.getElementById('startCallBtn').style.display = 'none';
+      document.getElementById('endCallBtn').style.display = 'inline-block';
+      
+      getLiveStream().then(stream => {
         localStream = stream;
-        document.getElementById('localVideo').srcObject = localStream;
+        document.getElementById('localVideo').srcObject = stream;
+        peer = new Peer();
+        peer.on('open', function(id) {
+          const link = window.location.origin + window.location.pathname + '?peer=' + id;
+          document.getElementById('callLink').value = link;
+        });
+        peer.on('call', function(call) {
+          currentCall = call;
+          call.answer(localStream);
+          call.on('stream', function(remoteStream) {
+            document.getElementById('remoteVideo').srcObject = remoteStream;
+          });
+        });
+      }).catch(err => {
+        alert('Gagal mengakses kamera dan mikrofon: ' + err);
+      });
+      
+      document.getElementById('endCallBtn').addEventListener('click', endCall);
+      document.getElementById('copyLinkBtn').addEventListener('click', function() {
+        const input = document.getElementById('callLink');
+        input.select();
+        document.execCommand('copy');
+        alert('Link disalin!');
+      });
+    }
+
+    // Inisialisasi mode Guest (jika ada parameter ?peer)
+    function initGuest(adminId) {
+      document.getElementById('startCallBtn').style.display = 'none';
+      document.getElementById('endCallBtn').style.display = 'inline-block';
+      
+      getLiveStream().then(stream => {
+        localStream = stream;
+        document.getElementById('localVideo').srcObject = stream;
+        peer = new Peer();
         peer.on('open', function(id) {
           const call = peer.call(adminId, localStream);
           currentCall = call;
@@ -195,67 +202,73 @@
             document.getElementById('remoteVideo').srcObject = remoteStream;
           });
         });
-      })
-      .catch(function(err) {
-        alert('Error accessing camera: ' + err);
+      }).catch(err => {
+        alert('Gagal mengakses kamera dan mikrofon: ' + err);
       });
-    document.getElementById('endCallBtn').addEventListener('click', function() {
+      
+      document.getElementById('endCallBtn').addEventListener('click', endCall);
+    }
+
+    // Mengakhiri panggilan dengan benar
+    function endCall() {
       if (currentCall) currentCall.close();
       if (peer) peer.destroy();
-      if (localStream) localStream.getTracks().forEach(track => track.stop());
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
       window.location.reload();
-    });
-  }
-  window.addEventListener('load', function() {
-    const adminPeerId = getQueryParam('peer');
-    if (adminPeerId) {
-      initGuest(adminPeerId);
-    } else {
-      document.getElementById('startCallBtn').addEventListener('click', function() {
-        initAdmin();
-      });
     }
-  });
-  // Fungsi drag 
-  const draggable = document.getElementById('draggable');
-  const dragHeader = document.getElementById('dragHeader');
-  let offsetX = 0, offsetY = 0, isDragging = false;
-  dragHeader.addEventListener('mousedown', function(e) {
-    isDragging = true;
-    offsetX = e.clientX - draggable.getBoundingClientRect().left;
-    offsetY = e.clientY - draggable.getBoundingClientRect().top;
-  });
-  document.addEventListener('mousemove', function(e) {
-    if (isDragging) {
-      draggable.style.left = (e.clientX - offsetX) + 'px';
-      draggable.style.top = (e.clientY - offsetY) + 'px';
-    }
-  });
-  document.addEventListener('mouseup', function() {
-    isDragging = false;
-  });
 
-  const toggleSizeBtn = document.getElementById('toggleSizeBtn');
-  toggleSizeBtn.addEventListener('click', function() {
-    if (!isEnlarged) {
-      originalStyle = { width: draggable.style.width, height: draggable.style.height, left: draggable.style.left, top: draggable.style.top, position: draggable.style.position };
-      draggable.style.position = 'fixed';
-      draggable.style.left = '0';
-      draggable.style.top = '0';
-      draggable.style.width = '100vw';
-      draggable.style.height = '100vh';
-      toggleSizeBtn.textContent = 'Minimize';
-      isEnlarged = true;
-    } else {
-      draggable.style.position = originalStyle.position;
-      draggable.style.width = originalStyle.width;
-      draggable.style.height = originalStyle.height;
-      draggable.style.left = originalStyle.left;
-      draggable.style.top = originalStyle.top;
-      toggleSizeBtn.textContent = 'Enlarge';
-      isEnlarged = false;
-    }
-  });
-</script>
+    window.addEventListener('load', function() {
+      const adminPeerId = getQueryParam('peer');
+      if (adminPeerId) {
+        initGuest(adminPeerId);
+      } else {
+        document.getElementById('startCallBtn').addEventListener('click', initAdmin);
+      }
+    });
+
+    // Fungsi draggable untuk memindahkan wrapper
+    const draggable = document.getElementById('draggable');
+    const dragHeader = document.getElementById('dragHeader');
+    let offsetX = 0, offsetY = 0, isDragging = false;
+    dragHeader.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      offsetX = e.clientX - draggable.getBoundingClientRect().left;
+      offsetY = e.clientY - draggable.getBoundingClientRect().top;
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (isDragging) {
+        draggable.style.left = (e.clientX - offsetX) + 'px';
+        draggable.style.top = (e.clientY - offsetY) + 'px';
+      }
+    });
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+    });
+
+    // Tombol toggle untuk memperbesar/meminimalkan tampilan
+    const toggleSizeBtn = document.getElementById('toggleSizeBtn');
+    toggleSizeBtn.addEventListener('click', function() {
+      if (!isEnlarged) {
+        originalStyle = { width: draggable.style.width, height: draggable.style.height, left: draggable.style.left, top: draggable.style.top, position: draggable.style.position };
+        draggable.style.position = 'fixed';
+        draggable.style.left = '0';
+        draggable.style.top = '0';
+        draggable.style.width = '100vw';
+        draggable.style.height = '100vh';
+        toggleSizeBtn.textContent = 'Minimize';
+        isEnlarged = true;
+      } else {
+        draggable.style.position = originalStyle.position;
+        draggable.style.width = originalStyle.width;
+        draggable.style.height = originalStyle.height;
+        draggable.style.left = originalStyle.left;
+        draggable.style.top = originalStyle.top;
+        toggleSizeBtn.textContent = 'Enlarge';
+        isEnlarged = false;
+      }
+    });
+  </script>
 </body>
 </html>
