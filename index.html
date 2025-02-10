@@ -140,7 +140,7 @@
   <body>
     <div class="container">
       <div class="spinner" id="spinner"></div>
-      <h2>C PYTHON <=</h2>
+      <h2>PYTHON <=</h2>
       <textarea id="codeInput" placeholder="Tempel script Python di sini..."></textarea>
       <button id="encryptButton" disabled>ENC GAS</button>
       <div class="result-section">
@@ -157,8 +157,9 @@ import uuid
 import js
 
 async def main():
-    # Nonaktifkan tombol ENCRYPT sampai pustaka siap
+    # Nonaktifkan tombol ENC GAS sampai pustaka siap
     js.document.getElementById("encryptButton").disabled = True
+
     import micropip
     await micropip.install("pyaes")
     import pyaes
@@ -189,12 +190,15 @@ async def main():
 
     def on_encrypt(event):
         js.document.getElementById("spinner").style.display = "block"
+        # Tampilkan pesan "Processing..." di output untuk debug
+        js.document.getElementById("output").innerText = "Processing..."
         code = js.document.getElementById("codeInput").value
         if not code.strip():
             js.document.getElementById("output").innerText = "Input kosong!"
             js.document.getElementById("spinner").style.display = "none"
             return
-        # Hasil enkripsi
+        # Debug: Cetak ke konsol PyScript (lihat di Developer Console)
+        print("Button ENC GAS diklik. Input:", code)
         obfuscated = obfuscate_code(code)
         js.document.getElementById("output").innerText = obfuscated
         js.document.getElementById("spinner").style.display = "none"
