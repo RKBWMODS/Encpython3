@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>=&gt; ENC PYTHON &lt;=</title>
+    <title>C PYTHON <=</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -36,105 +36,94 @@
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 
     <style>
-      /* Gaya global dan background gradient */
+      /* Tema dark minimal modern */
       body {
         margin: 0;
         padding: 0;
-        min-height: 100vh;
+        background: #121212;
+        color: #e0e0e0;
+        font-family: Arial, sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #ffffff;
+        min-height: 100vh;
       }
-      /* Container utama dengan efek blur, shadow dan border neon */
       .container {
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        padding: 30px 40px;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        background: #1e1e1e;
+        border-radius: 12px;
+        padding: 20px 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         width: 90%;
-        max-width: 700px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        max-width: 600px;
       }
       h2 {
         text-align: center;
-        font-size: 2.5em;
-        text-shadow: 0 0 10px #00ffea;
         margin-bottom: 20px;
+        font-size: 2em;
       }
       textarea {
         width: 100%;
-        height: 250px;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.1);
+        height: 200px;
+        background: #2e2e2e;
         border: none;
-        outline: none;
-        color: #fff;
-        font-size: 1em;
-        font-family: 'Courier New', Courier, monospace;
         border-radius: 8px;
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        padding: 10px;
+        color: #e0e0e0;
+        font-family: monospace;
+        font-size: 1em;
         resize: vertical;
       }
       button {
-        background: linear-gradient(45deg, #00ffea, #00c6ff);
+        display: inline-block;
+        background: #0066cc;
         border: none;
         color: #fff;
-        padding: 12px 24px;
-        font-size: 1em;
-        font-weight: bold;
+        padding: 10px 20px;
         border-radius: 8px;
         cursor: pointer;
-        text-transform: uppercase;
-        box-shadow: 0 0 10px rgba(0, 255, 234, 0.5);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        margin-top: 15px;
+        font-size: 1em;
+        margin-top: 10px;
+        transition: background 0.3s ease;
       }
       button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 15px rgba(0, 255, 234, 0.8);
+        background: #005bb5;
       }
       .result-section {
-        margin-top: 25px;
+        margin-top: 20px;
+      }
+      .result-section h3 {
+        margin: 10px 0;
+        font-size: 1.2em;
+        text-align: center;
       }
       #output {
-        margin-top: 10px;
-        padding: 15px;
-        background: rgba(0, 0, 0, 0.4);
+        background: #2e2e2e;
         border-radius: 8px;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 1em;
-        color: #00ffea;
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
-        min-height: 120px;
+        padding: 10px;
+        min-height: 100px;
+        font-family: monospace;
         word-wrap: break-word;
       }
       .copy-button {
-        background: linear-gradient(45deg, #ff00e6, #ff007c);
-        margin-top: 15px;
+        background: #cc6600;
       }
-      h3 {
-        text-align: center;
-        margin-top: 20px;
-        text-shadow: 0 0 10px #ff00e6;
+      .copy-button:hover {
+        background: #b35900;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h2>=&gt; ENC PYTHON &lt;=</h2>
-      <!-- Kolom untuk menempelkan script Python -->
+      <h2>C PYTHON <=</h2>
+      <!-- Tempel script Python di sini... -->
       <textarea id="codeInput" placeholder="Tempel script Python di sini..."></textarea>
       <!-- Tombol ENC GAS -->
       <button id="encryptButton">ENC GAS</button>
-      <!-- Bagian hasil enkripsi -->
+      <!-- Hasil enkripsi -->
       <div class="result-section">
         <h3>HASIL ENCRIPT DI TAMPILKAN DI BAWAH INI</h3>
         <div id="output"></div>
-        <!-- Tombol COPY untuk menyalin hasil enkripsi -->
+        <!-- Tombol COPY -->
         <button id="copyButton" class="copy-button">COPY</button>
       </div>
     </div>
@@ -186,18 +175,14 @@ js.document.getElementById("encryptButton").addEventListener("click", on_encrypt
     <!-- Script untuk fungsi COPY -->
     <script>
       document.getElementById("copyButton").addEventListener("click", function() {
-        const encryptedText = document.getElementById("output").innerText;
-        if (encryptedText.trim() === "") {
+        const output = document.getElementById("output").innerText;
+        if (output.trim() === "") {
           alert("Tidak ada hasil enkripsi untuk disalin.");
           return;
         }
-        navigator.clipboard.writeText(encryptedText)
-          .then(() => {
-            alert("Hasil enkripsi telah disalin!");
-          })
-          .catch(err => {
-            alert("Gagal menyalin: " + err);
-          });
+        navigator.clipboard.writeText(output)
+          .then(() => alert("Hasil enkripsi telah disalin!"))
+          .catch(err => alert("Gagal menyalin: " + err));
       });
     </script>
   </body>
