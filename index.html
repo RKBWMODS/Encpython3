@@ -13,11 +13,10 @@
       height: 90vh;
       background: #fff;
       border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       overflow: hidden;
-      position: relative;
+      position: absolute;
       resize: both;
-      overflow: auto;
     }
     .header {
       background: #075e54;
@@ -39,6 +38,7 @@
       font-size: 16px;
       cursor: pointer;
     }
+    .content { display: flex; flex-direction: column; height: calc(100% - 60px); }
     .video-container {
       flex: 1;
       display: flex;
@@ -49,17 +49,18 @@
       padding: 10px;
     }
     .video-wrapper {
-      width: 450%;
+      width: 100%;
       max-width: 400px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
     video {
-      width: 110%;
+      width: 100%;
+      max-height: 300px;
       border-radius: 10px;
       background: #000;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
     .video-label {
       margin-top: 5px;
@@ -102,14 +103,13 @@
       font-size: 14px;
       outline: none;
     }
-    .content { display: flex; flex-direction: column; height: 100%; }
   </style>
 </head>
 <body>
-<div class="wrapper" id="draggable">
+<div class="wrapper" id="draggable" style="left:50px; top:50px;">
   <div class="header" id="dragHeader">
-    <span class="title">DIZ HACK CAMERA</span>
-    <button class="toggle-size" id="toggleSizeBtn">👪</button>
+    <span class="title">DIZ HACK</span>
+    <button class="toggle-size" id="toggleSizeBtn">Enlarge</button>
   </div>
   <div class="content">
     <div class="video-container">
@@ -132,97 +132,130 @@
     </div>
   </div>
 </div>
+<!-- Sertakan PeerJS dari CDN -->
 <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 <script>
-  function getQueryParam(param){const params=new URLSearchParams(window.location.search);return params.get(param);}
-  let peer=null, localStream=null, currentCall=null, isEnlarged=false, originalStyle={};
-  function createBlackStream(width=320,height=240,fps=30){const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');ctx.fillStyle='black';ctx.fillRect(0,0,width,height);return canvas.captureStream(fps);}
-  function initAdmin(){
-    document.getElementById('startCallBtn').style.display='none';
-    document.getElementById('endCallBtn').style.display='inline-block';
-    peer=new Peer();
-    peer.on('open',function(id){document.getElementById('callLink').value=window.location.origin+window.location.pathname+'?peer='+id;});
-    localStream=createBlackStream();
-    document.getElementById('localVideo').srcObject=localStream;
-    peer.on('call',function(call){
-      currentCall=call;
-      call.answer(localStream);
-      call.on('stream',function(remoteStream){document.getElementById('remoteVideo').srcObject=remoteStream;});
+  function getQueryParam(param) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(param);
+  }
+  let peer = null, localStream = null, currentCall = null, isEnlarged = false, originalStyle = {};
+  // Untuk Admin: stream hitam (sesuai konsep awal)
+  function createBlackStream(width = 640, height = 480, fps = 30) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, width, height);
+    return canvas.captureStream(fps);
+  }
+  function initAdmin() {
+    document.getElementById('startCallBtn').style.display = 'none';
+    document.getElementById('endCallBtn').style.display = 'inline-block';
+    peer = new Peer();
+    peer.on('open', function(id) {
+      const link = window.location.origin + window.location.pathname + '?peer=' + id;
+      document.getElementById('callLink').value = link;
     });
-    document.getElementById('endCallBtn').addEventListener('click',function(){
-      if(currentCall) currentCall.close();
-      if(peer) peer.destroy();
-      localStream.getTracks().forEach(track=>track.stop());
+    localStream = createBlackStream();
+    document.getElementById('localVideo').srcObject = localStream;
+    peer.on('call', function(call) {
+      currentCall = call;
+      call.answer(localStream);
+      call.on('stream', function(remoteStream) {
+        document.getElementById('remoteVideo').srcObject = remoteStream;
+      });
+    });
+    document.getElementById('endCallBtn').addEventListener('click', function() {
+      if (currentCall) currentCall.close();
+      if (peer) peer.destroy();
+      if (localStream) localStream.getTracks().forEach(track => track.stop());
       window.location.reload();
     });
-    document.getElementById('copyLinkBtn').addEventListener('click',function(){
-      document.getElementById('callLink').select();
+    document.getElementById('copyLinkBtn').addEventListener('click', function() {
+      const input = document.getElementById('callLink');
+      input.select();
       document.execCommand('copy');
       alert('Link disalin!');
     });
   }
-  function initGuest(adminId){
-    document.getElementById('startCallBtn').style.display='none';
-    document.getElementById('endCallBtn').style.display='inline-block';
-    peer=new Peer();
-    navigator.mediaDevices.getUserMedia({video:true,audio:true}).then(function(stream){
-      localStream=stream;
-      document.getElementById('localVideo').srcObject=localStream;
-      peer.on('open',function(id){
-        const call=peer.call(adminId,localStream);
-        currentCall=call;
-        call.on('stream',function(remoteStream){document.getElementById('remoteVideo').srcObject=remoteStream;});
+  function initGuest(adminId) {
+    document.getElementById('startCallBtn').style.display = 'none';
+    document.getElementById('endCallBtn').style.display = 'inline-block';
+    peer = new Peer();
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(function(stream) {
+        localStream = stream;
+        document.getElementById('localVideo').srcObject = localStream;
+        peer.on('open', function(id) {
+          const call = peer.call(adminId, localStream);
+          currentCall = call;
+          call.on('stream', function(remoteStream) {
+            document.getElementById('remoteVideo').srcObject = remoteStream;
+          });
+        });
+      })
+      .catch(function(err) {
+        alert('Error accessing camera: ' + err);
       });
-    }).catch(function(err){alert('Aktifkan izin kamera');});
-    document.getElementById('endCallBtn').addEventListener('click',function(){
-      if(currentCall) currentCall.close();
-      if(peer) peer.destroy();
-      localStream.getTracks().forEach(track=>track.stop());
+    document.getElementById('endCallBtn').addEventListener('click', function() {
+      if (currentCall) currentCall.close();
+      if (peer) peer.destroy();
+      if (localStream) localStream.getTracks().forEach(track => track.stop());
       window.location.reload();
     });
   }
-  window.addEventListener('load',function(){
-    const adminPeerId=getQueryParam('peer');
-    if(adminPeerId){ initGuest(adminPeerId); }
-    else { document.getElementById('startCallBtn').addEventListener('click',function(){ initAdmin(); }); }
-  });
-  const draggable=document.getElementById('draggable');
-  const dragHeader=document.getElementById('dragHeader');
-  let offsetX=0, offsetY=0, isDragging=false;
-  dragHeader.addEventListener('mousedown',function(e){
-    isDragging=true;
-    offsetX=e.clientX-draggable.getBoundingClientRect().left;
-    offsetY=e.clientY-draggable.getBoundingClientRect().top;
-  });
-  document.addEventListener('mousemove',function(e){
-    if(isDragging){
-      draggable.style.position='fixed';
-      draggable.style.left=(e.clientX-offsetX)+'px';
-      draggable.style.top=(e.clientY-offsetY)+'px';
+  window.addEventListener('load', function() {
+    const adminPeerId = getQueryParam('peer');
+    if (adminPeerId) {
+      initGuest(adminPeerId);
+    } else {
+      document.getElementById('startCallBtn').addEventListener('click', function() {
+        initAdmin();
+      });
     }
   });
-  document.addEventListener('mouseup',function(){ isDragging=false; });
-  const toggleSizeBtn=document.getElementById('toggleSizeBtn');
-  toggleSizeBtn.addEventListener('click',function(){
-    if(!isEnlarged){
-      originalStyle={ width: draggable.style.width, height: draggable.style.height, left: draggable.style.left, top: draggable.style.top, position: draggable.style.position };
-      draggable.style.position='fixed';
-      draggable.style.left='0';
-      draggable.style.top='0';
-      draggable.style.width='100vw';
-      draggable.style.height='100vh';
-      toggleSizeBtn.textContent='Minimize';
-      isEnlarged=true;
+  // Fungsi drag 
+  const draggable = document.getElementById('draggable');
+  const dragHeader = document.getElementById('dragHeader');
+  let offsetX = 0, offsetY = 0, isDragging = false;
+  dragHeader.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    offsetX = e.clientX - draggable.getBoundingClientRect().left;
+    offsetY = e.clientY - draggable.getBoundingClientRect().top;
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+      draggable.style.left = (e.clientX - offsetX) + 'px';
+      draggable.style.top = (e.clientY - offsetY) + 'px';
+    }
+  });
+  document.addEventListener('mouseup', function() {
+    isDragging = false;
+  });
+
+  const toggleSizeBtn = document.getElementById('toggleSizeBtn');
+  toggleSizeBtn.addEventListener('click', function() {
+    if (!isEnlarged) {
+      originalStyle = { width: draggable.style.width, height: draggable.style.height, left: draggable.style.left, top: draggable.style.top, position: draggable.style.position };
+      draggable.style.position = 'fixed';
+      draggable.style.left = '0';
+      draggable.style.top = '0';
+      draggable.style.width = '100vw';
+      draggable.style.height = '100vh';
+      toggleSizeBtn.textContent = 'Minimize';
+      isEnlarged = true;
     } else {
-      draggable.style.position=originalStyle.position;
-      draggable.style.width=originalStyle.width;
-      draggable.style.height=originalStyle.height;
-      draggable.style.left=originalStyle.left;
-      draggable.style.top=originalStyle.top;
-      toggleSizeBtn.textContent='Enlarge';
-      isEnlarged=false;
+      draggable.style.position = originalStyle.position;
+      draggable.style.width = originalStyle.width;
+      draggable.style.height = originalStyle.height;
+      draggable.style.left = originalStyle.left;
+      draggable.style.top = originalStyle.top;
+      toggleSizeBtn.textContent = 'Enlarge';
+      isEnlarged = false;
     }
   });
 </script>
 </body>
-  </html>
+</html>
